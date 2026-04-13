@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dragon Ball TCG</title>
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<!-- ===== SCREEN: MAIN MENU ===== -->
+<div id="screen-menu" class="screen active">
+  <div class="menu-bg">
+    <h1 class="title-main">Dragon Ball TCG</h1>
+    <p class="subtitle">El Juego de Cartas Coleccionables</p>
+    <div class="menu-buttons">
+      <button class="btn btn-primary" id="btn-start">&#9654; Nueva Partida</button>
+      <button class="btn btn-secondary" id="btn-rules">&#9432; Reglas</button>
+    </div>
+    <div class="dragon-balls-deco">
+      <span class="db db1">&#9733;</span>
+      <span class="db db2">&#9733;&#9733;</span>
+      <span class="db db3">&#9733;&#9733;&#9733;</span>
+      <span class="db db4">&#9733;&#9733;&#9733;&#9733;</span>
+      <span class="db db5">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+      <span class="db db6">&#9733;&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+      <span class="db db7">&#9733;&#9733;&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+    </div>
+  </div>
+</div>
+
+<!-- ===== SCREEN: RULES ===== -->
+<div id="screen-rules" class="screen">
+  <div class="rules-panel">
+    <h2>Reglas del Juego</h2>
+    <ul>
+      <li><strong>Objetivo:</strong> Derrota 6 personajes del oponente para ganar las Esferas del Dragon.</li>
+      <li><strong>Baraja:</strong> Cada jugador tiene 20 cartas mezcladas aleatoriamente.</li>
+      <li><strong>Robar:</strong> Roba 5 cartas al inicio; roba 1 por turno.</li>
+      <li><strong>Energía Ki:</strong> Cada turno ganas +1 Ki. Las cartas cuestan Ki para jugar.</li>
+      <li><strong>Batalla:</strong> Tu personaje activo ataca al personaje activo enemigo.</li>
+      <li><strong>KO:</strong> Cuando un personaje llega a 0 HP es derrotado. El oponente roba 1 Esfera.</li>
+      <li><strong>Esferas:</strong> Tienes 6 Esferas del Dragón. Perder 6 = derrota.</li>
+      <li><strong>Cartas Especiales:</strong> Soporte y Transformación cambian el campo de batalla.</li>
+    </ul>
+    <button class="btn btn-primary" id="btn-rules-back">Volver</button>
+  </div>
+</div>
+
+<!-- ===== SCREEN: GAME ===== -->
+<div id="screen-game" class="screen">
+
+  <!-- TOP: Enemy Area -->
+  <div class="player-area enemy-area" id="enemy-area">
+    <div class="area-top-bar">
+      <span class="player-label">CPU</span>
+      <div class="ki-display" id="enemy-ki">Ki: 0</div>
+      <div class="spheres-display" id="enemy-spheres">
+        <span class="sphere-label">Esferas:</span>
+        <span class="sphere active" data-owner="enemy" data-idx="0">&#11044;</span>
+        <span class="sphere active" data-owner="enemy" data-idx="1">&#11044;</span>
+        <span class="sphere active" data-owner="enemy" data-idx="2">&#11044;</span>
+        <span class="sphere active" data-owner="enemy" data-idx="3">&#11044;</span>
+        <span class="sphere active" data-owner="enemy" data-idx="4">&#11044;</span>
+        <span class="sphere active" data-owner="enemy" data-idx="5">&#11044;</span>
+      </div>
+      <div class="deck-info">Mazo: <span id="enemy-deck-count">20</span></div>
+    </div>
+    <div class="bench" id="enemy-bench"></div>
+    <div class="active-zone" id="enemy-active">
+      <div class="active-placeholder">Sin personaje activo</div>
+    </div>
+  </div>
+
+  <!-- CENTER: Battle Log & Actions -->
+  <div class="battle-center">
+    <div class="battle-log" id="battle-log">
+      <p class="log-entry system">Bienvenido a Dragon Ball TCG</p>
+    </div>
+    <div class="center-actions">
+      <button class="btn btn-attack" id="btn-attack" disabled>&#9889; Atacar</button>
+      <button class="btn btn-end-turn" id="btn-end-turn" disabled>Fin de turno &#8594;</button>
+    </div>
+    <div class="turn-display" id="turn-display">Turno: -</div>
+  </div>
+
+  <!-- BOTTOM: Player Area -->
+  <div class="player-area player-area-self" id="player-area">
+    <div class="active-zone" id="player-active">
+      <div class="active-placeholder">Sin personaje activo</div>
+    </div>
+    <div class="bench" id="player-bench"></div>
+    <div class="area-bottom-bar">
+      <span class="player-label">Tú</span>
+      <div class="ki-display" id="player-ki">Ki: 0</div>
+      <div class="spheres-display" id="player-spheres">
+        <span class="sphere-label">Esferas:</span>
+        <span class="sphere active" data-owner="player" data-idx="0">&#11044;</span>
+        <span class="sphere active" data-owner="player" data-idx="1">&#11044;</span>
+        <span class="sphere active" data-owner="player" data-idx="2">&#11044;</span>
+        <span class="sphere active" data-owner="player" data-idx="3">&#11044;</span>
+        <span class="sphere active" data-owner="player" data-idx="4">&#11044;</span>
+        <span class="sphere active" data-owner="player" data-idx="5">&#11044;</span>
+      </div>
+      <div class="deck-info">Mazo: <span id="player-deck-count">20</span></div>
+    </div>
+    <div class="hand" id="player-hand"></div>
+  </div>
+
+</div>
+
+<!-- ===== MODAL: Card Detail ===== -->
+<div id="modal-card" class="modal hidden">
+  <div class="modal-content">
+    <button class="modal-close" id="modal-close-btn">&#10006;</button>
+    <div id="modal-card-content"></div>
+    <div class="modal-actions" id="modal-actions"></div>
+  </div>
+</div>
+
+<!-- ===== MODAL: Game Over ===== -->
+<div id="modal-gameover" class="modal hidden">
+  <div class="modal-content gameover-content">
+    <h2 id="gameover-title"></h2>
+    <p id="gameover-msg"></p>
+    <button class="btn btn-primary" id="btn-play-again">Jugar de Nuevo</button>
+    <button class="btn btn-secondary" id="btn-go-menu">Menu Principal</button>
+  </div>
+</div>
+
+<!-- ===== TOAST ===== -->
+<div id="toast" class="toast hidden"></div>
+
+<script src="js/cards.js"></script>
+<script src="js/game.js"></script>
+<script src="js/ui.js"></script>
+</body>
+</html>
