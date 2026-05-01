@@ -1,0 +1,45 @@
+export const COLORS = {
+  background: '#0A0E1A',
+  surface: '#141928',
+  card: '#1A2235',
+  cardBorder: '#253045',
+  primary: '#FFD700',
+  primaryDark: '#CC9900',
+  accent: '#FF6B35',
+  text: '#FFFFFF',
+  textMuted: '#8899BB',
+  textDim: '#556070',
+  success: '#2ECC71',
+  danger: '#E74C3C',
+  warning: '#F39C12',
+  info: '#3498DB',
+  hp: '#2ECC71',
+  hpLow: '#E74C3C',
+  hpMid: '#F39C12',
+  overlay: 'rgba(0,0,0,0.7)',
+
+  elements: {
+    fuego: '#FF4500',
+    agua: '#1E90FF',
+    viento: '#00CC66',
+    luz: '#FFD700',
+    oscuridad: '#9B59B6',
+  },
+
+  elementsBg: {
+    fuego: 'rgba(255,69,0,0.2)',
+    agua: 'rgba(30,144,255,0.2)',
+    viento: 'rgba(0,204,102,0.2)',
+    luz: 'rgba(255,215,0,0.2)',
+    oscuridad: 'rgba(155,89,182,0.2)',
+  },
+
+  rarity: {
+    1: '#888888',
+    2: '#27AE60',
+    3: '#2980B9',
+    4: '#8E44AD',
+    5: '#E67E22',
+    6: '#E74C3C',
+  },
+};
