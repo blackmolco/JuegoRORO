@@ -1,911 +1,435 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Ensayos SIMCE 4° Básico - Rocío</title>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            --primary: #6C5CE7;
-            --primary-light: #A29BFE;
-            --secondary: #00CEC9;
-            --accent: #FD79A8;
-            --success: #00B894;
-            --error: #D63031;
-            --background: #F0F3F8;
-            --surface: rgba(255, 255, 255, 0.9);
-            --text: #2D3436;
-            --card-bg: #ffffff;
-            --border-color: #dfe6e9;
-        }
-
-        body.dark-mode {
-            --primary: #8c7ae6;
-            --primary-light: #5a4bcf;
-            --background: #1e272e;
-            --surface: rgba(45, 52, 54, 0.95);
-            --text: #dfe6e9;
-            --card-bg: #2d3436;
-            --border-color: #636e72;
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Nunito', sans-serif; -webkit-tap-highlight-color: transparent; }
-        
-        body { 
-            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); 
-            min-height: 100vh; color: var(--text); display: flex; justify-content: center; align-items: center; padding: 20px; 
-            transition: background 0.5s ease;
-            overflow-x: hidden;
-            user-select: none;
-            -webkit-user-select: none;
-        }
-
-        input { user-select: auto; -webkit-user-select: auto; }
-
-        body.dark-mode { background: linear-gradient(135deg, #1e272e 0%, #000000 100%); }
-        
-        .app-container { width: 100%; max-width: 800px; background: var(--surface); backdrop-filter: blur(10px); border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); overflow: hidden; position: relative; min-height: 650px; display: flex; flex-direction: column; transition: all 0.3s; }
-        
-        header { background: var(--primary); color: white; padding: 20px 30px; text-align: center; position: relative; display: flex; justify-content: space-between; align-items: center; transition: background 0.3s;}
-        header h1 { font-size: 24px; font-weight: 800; letter-spacing: 1px; margin: 0 auto;}
-        
-        .theme-toggle { background: rgba(255,255,255,0.2); border: none; color: white; font-size: 24px; border-radius: 50%; width: 45px; height: 45px; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: transform 0.2s; flex-shrink: 0;}
-        .theme-toggle:active { transform: scale(0.9); }
-
-        .timer-display { background: rgba(255,255,255,0.2); padding: 5px 15px; border-radius: 20px; font-weight: bold; font-size: 18px; display: none; align-items: center; gap: 5px; flex-shrink: 0;}
-        .timer-display.danger { color: #ff7675; animation: pulse 1s infinite; }
-        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.5; } 100% { opacity: 1; } }
-
-        .content { padding: 30px; flex: 1; display: flex; flex-direction: column; overflow-y: auto; }
-
-        /* Profile Section */
-        .profile-section { display: flex; align-items: center; justify-content: center; gap: 20px; background: var(--card-bg); padding: 20px; border-radius: 20px; margin-bottom: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 2px solid var(--border-color); }
-        .avatar-box { font-size: 60px; width: 80px; height: 80px; background: var(--background); border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; border: 3px solid var(--primary-light); transition: transform 0.2s;}
-        .avatar-box:hover { transform: scale(1.05); }
-        .profile-info { flex: 1; text-align: left; }
-        .profile-info h2 { font-size: 24px; color: var(--primary); margin-bottom: 5px; }
-        .level-text { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 5px; opacity: 0.8;}
-        .xp-bar-container { width: 100%; height: 12px; background: var(--border-color); border-radius: 6px; overflow: hidden; margin-bottom: 5px; position: relative;}
-        .xp-bar-fill { height: 100%; background: linear-gradient(90deg, #f1c40f, #f39c12); width: 0%; transition: width 0.5s ease-out; }
-        .xp-text { font-size: 12px; font-weight: 700; color: var(--text); opacity: 0.7;}
-
-        /* Home Screen */
-        .home-screen { display: flex; flex-direction: column; flex: 1; }
-        .subject-cards { display: flex; gap: 20px; flex-wrap: wrap; justify-content: flex-start; align-content: flex-start; width: 100%; padding-bottom: 20px;}
-        .card { background: var(--card-bg); color: var(--text); border-radius: 20px; padding: 25px 15px; width: 220px; cursor: pointer; box-shadow: 0 10px 20px rgba(0,0,0,0.05); transition: transform 0.3s, box-shadow 0.3s, background 0.3s; border: 2px solid transparent; position: relative; text-align: center;}
-        .card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.1); border-color: var(--primary-light); }
-        .card.math { border-bottom: 5px solid var(--secondary); }
-        .card.lang { border-bottom: 5px solid var(--accent); }
-        .card.random { border-bottom: 5px solid #f1c40f; background: linear-gradient(45deg, var(--card-bg), rgba(241, 196, 15, 0.1)); }
-        .card.lightning { border-bottom: 5px solid #e74c3c; background: linear-gradient(45deg, var(--card-bg), rgba(231, 76, 60, 0.1)); }
-        
-        .card-icon { font-size: 40px; margin-bottom: 10px; }
-        .card h3 { font-size: 20px; margin-bottom: 5px; }
-        .badge-completed { position: absolute; top: -10px; right: -10px; background: var(--success); color: white; width: 35px; height: 35px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 18px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); display: none; z-index: 2;}
-
-        /* Exam Screen */
-        .exam-screen { display: none; flex-direction: column; flex: 1; }
-        .progress-bar { height: 10px; background: var(--border-color); border-radius: 5px; margin-bottom: 20px; overflow: hidden; }
-        .progress-fill { height: 100%; background: var(--primary); width: 0%; transition: width 0.4s ease; }
-        
-        .lightning-bar-container { width: 100%; height: 12px; background: var(--border-color); margin-bottom: 20px; border-radius: 6px; overflow: hidden; display: none; }
-        .lightning-bar-fill { height: 100%; background: #e74c3c; width: 100%; transition: width 1s linear, background-color 0.3s; }
-
-        /* Boss Battle UI */
-        #boss-ui { display:none; justify-content: space-between; align-items: center; margin-bottom: 20px; background: var(--card-bg); padding: 15px; border-radius: 15px; border: 2px solid #8e44ad; box-shadow: 0 5px 15px rgba(142,68,173,0.2); }
-        @keyframes bossHit { 0% { transform: translateX(0); filter: brightness(1); } 25% { transform: translateX(-10px); filter: brightness(2) drop-shadow(0 0 10px red); } 50% { transform: translateX(10px); } 75% { transform: translateX(-10px); } 100% { transform: translateX(0); filter: brightness(1); } }
-        .boss-hit { animation: bossHit 0.5s; }
-
-        .reading-text { background: var(--card-bg); padding: 20px; border-radius: 15px; border-left: 5px solid var(--accent); margin-bottom: 25px; font-size: 18px; line-height: 1.6; box-shadow: 0 4px 6px rgba(0,0,0,0.05); color: var(--text); }
-        .reading-text h3 { margin-bottom: 10px; color: var(--accent); }
-
-        .question-container { margin-bottom: 30px; position: relative; }
-        .question-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;}
-        .question-text { font-size: 24px; font-weight: 700; color: var(--text); flex: 1;}
-        
-        .tools-container { display: flex; gap: 10px;}
-        .tool-btn { background: var(--primary-light); color: white; border: none; width: 45px; height: 45px; border-radius: 50%; font-size: 22px; cursor: pointer; display: flex; justify-content: center; align-items: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1); transition: transform 0.2s; flex-shrink: 0;}
-        .tool-btn:active { transform: scale(0.9); }
-        .tool-btn.whiteboard-btn { background: var(--secondary); }
-
-        .question-image { text-align: center; margin-bottom: 20px; }
-        .question-image svg { max-width: 100%; height: auto; max-height: 200px; }
-
-        .options { display: flex; flex-direction: column; gap: 12px; }
-        .option { background: var(--card-bg); padding: 15px 20px; border-radius: 15px; border: 2px solid var(--border-color); font-size: 18px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; color: var(--text); }
-        .option:hover { border-color: var(--primary-light); opacity: 0.9; }
-        .option.selected { background: var(--primary-light); color: white; border-color: var(--primary); box-shadow: 0 4px 10px rgba(108, 92, 231, 0.2); }
-        .option-letter { display: inline-flex; justify-content: center; align-items: center; width: 35px; height: 35px; background: var(--border-color); border-radius: 50%; margin-right: 15px; font-weight: bold; color: var(--text); transition: all 0.2s; flex-shrink: 0;}
-        .option.selected .option-letter { background: white; color: var(--primary); }
-
-        .actions { display: flex; justify-content: space-between; margin-top: auto; padding-top: 20px; }
-        button.btn { padding: 15px 30px; border-radius: 12px; border: none; font-size: 18px; font-weight: 700; cursor: pointer; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: inline-flex; align-items: center; justify-content: center; gap: 8px;}
-        button.btn:active { transform: translateY(2px); }
-        .btn-primary { background: var(--primary); color: white; }
-        .btn-primary:hover { background: #5a4bcf; }
-        .btn-primary:disabled { background: #b2bec3; cursor: not-allowed; transform: none; box-shadow: none; }
-        .btn-secondary { background: transparent; color: var(--primary); border: 2px solid var(--primary); }
-        .btn-success { background: var(--success); color: white; }
-
-        /* Results Screen */
-        .results-screen { display: none; text-align: center; flex-direction: column; align-items: center; justify-content: center; flex: 1; z-index: 10; position: relative; padding-bottom: 30px;}
-        .score-circle { width: 150px; height: 150px; border-radius: 50%; background: var(--card-bg); border: 10px solid var(--success); display: flex; justify-content: center; align-items: center; font-size: 48px; font-weight: 800; color: var(--success); margin: 0 auto 10px auto; box-shadow: 0 10px 20px rgba(0,184,148,0.2); }
-        .results-message { font-size: 28px; font-weight: 700; margin-bottom: 5px; color: var(--text);}
-        .xp-gain { font-size: 22px; font-weight: 800; color: #f39c12; margin-bottom: 15px; animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        @keyframes popIn { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-
-        .corrections { text-align: left; width: 100%; margin-top: 10px; background: var(--card-bg); padding: 20px; border-radius: 15px; max-height: 350px; overflow-y: auto; color: var(--text); border: 1px solid var(--border-color);}
-        .correction-item { margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--border-color); }
-        .correction-item:last-child { border-bottom: none; margin-bottom:0; padding-bottom:0;}
-        .corr-q { font-weight: 700; margin-bottom: 8px; font-size: 18px;}
-        .corr-wrong { color: var(--error); margin-bottom: 4px;}
-        .corr-correct { color: var(--success); font-weight: bold; margin-bottom: 8px;}
-        .corr-explanation { background: rgba(0,184,148,0.1); padding: 12px; border-radius: 8px; font-size: 16px; border-left: 4px solid var(--success); line-height: 1.5; color: var(--text);}
-
-        /* Whiteboard Modal */
-        #whiteboard-modal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; z-index:9999; background: rgba(255,255,255,0.85); backdrop-filter: blur(5px); }
-        body.dark-mode #whiteboard-modal { background: rgba(0,0,0,0.85); }
-        #wb-canvas { width:100%; height:100%; touch-action: none; cursor: crosshair; }
-        .wb-tools { position:absolute; top:20px; right:20px; display:flex; gap:10px; z-index:10000;}
-        .wb-question { position:absolute; top:20px; left:20px; font-size:22px; font-weight:800; max-width:60%; color:#2d3436; pointer-events:none; text-shadow:2px 2px 4px rgba(255,255,255,0.9); z-index:10000; }
-        body.dark-mode .wb-question { color:#dfe6e9; text-shadow:2px 2px 4px rgba(0,0,0,0.9); }
-
-        /* Minigame Modal */
-        #minigame-screen { display:none; position:fixed; top:0; left:0; width:100%; height:100%; z-index:9999; background: #87CEEB; flex-direction: column; align-items: center; }
-        body.dark-mode #minigame-screen { background: #192a56; }
-        #mg-canvas { width:100%; height:100%; position:absolute; top:0; left:0; touch-action: none;}
-        .mg-ui { position:absolute; top:20px; width: 100%; display: flex; justify-content: space-between; padding: 0 40px; pointer-events: none; z-index: 10; font-size: 28px; font-weight: 900; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);}
-        .mg-close { position:absolute; bottom: 30px; z-index: 10; pointer-events: auto;}
-
-        /* Avatar Modal */
-        #avatar-modal { display:none; position:absolute; top:50%; left:50%; transform:translate(-50%, -50%); background: var(--card-bg); padding:30px; border-radius:20px; box-shadow:0 10px 50px rgba(0,0,0,0.5); z-index:100; text-align:center; width:90%; max-width: 400px; border: 2px solid var(--border-color);}
-        .avatar-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin: 20px 0; }
-        .avatar-option { font-size: 40px; cursor: pointer; padding: 10px; background: var(--background); border-radius: 15px; transition: transform 0.2s;}
-        .avatar-option:hover { transform: scale(1.1); background: var(--primary-light); }
-
-        /* Badges Modal */
-        #badges-modal { display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background: var(--card-bg); padding:30px; border-radius:20px; box-shadow:0 10px 50px rgba(0,0,0,0.5); z-index:100; text-align:center; width:90%; max-width: 500px; border: 2px solid var(--border-color); max-height: 80vh; overflow-y: auto;}
-        .badge-item { display: flex; align-items: center; background: var(--background); padding: 15px; border-radius: 15px; margin-bottom: 10px; opacity: 0.5; filter: grayscale(100%); transition: all 0.3s; text-align: left; border: 2px solid transparent;}
-        .badge-item.unlocked { opacity: 1; filter: grayscale(0%); border-color: #f1c40f; background: rgba(241, 196, 15, 0.1); }
-        .badge-icon { font-size: 40px; margin-right: 15px; }
-        .badge-info h4 { margin: 0; color: var(--text); font-size: 18px;}
-        .badge-info p { margin: 0; font-size: 14px; color: var(--text); opacity: 0.8;}
-
-        /* Badge Popup */
-        .badge-popup { position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); background: #2d3436; color: white; padding: 15px 25px; border-radius: 50px; display: flex; align-items: center; gap: 15px; z-index: 10000; transition: bottom 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); box-shadow: 0 10px 30px rgba(0,0,0,0.3); border: 2px solid #f1c40f; width: 90%; max-width: 400px; pointer-events: none;}
-        .badge-popup.show { bottom: 30px; }
-        .badge-popup-icon { font-size: 35px; }
-        .badge-popup-text h4 { margin: 0; color: #f1c40f; font-size: 16px;}
-        .badge-popup-text p { margin: 0; font-size: 14px; }
-
-        /* Theme variables override */
-        body.theme-galaxy { --primary: #9b59b6; --primary-light: #8e44ad; --background: #0f0c29; --surface: rgba(30, 27, 75, 0.95); --text: #ecf0f1; --card-bg: #2c3e50; --border-color: #34495e; background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%) !important; }
-        body.theme-rainbow { --primary: #ff4757; --primary-light: #ff6b81; background: linear-gradient(45deg, #ff9a9e, #fecfef, #a1c4fd, #c2e9fb, #d4fc79) !important; background-size: 400% 400% !important; animation: rainbowBG 15s ease infinite !important; }
-        @keyframes rainbowBG { 0%{background-position:0% 50%} 50%{background-position:100% 50%} 100%{background-position:0% 50%} }
-        body.theme-forest { --primary: #2ecc71; --primary-light: #27ae60; --background: #134E5E; --surface: rgba(20, 50, 30, 0.95); --text: #ecf0f1; --card-bg: #1e3d2f; --border-color: #2c5e43; background: linear-gradient(135deg, #134E5E 0%, #71B280 100%) !important; }
-
-        /* Store Modal */
-        #store-modal { display:none; position:fixed; top:50%; left:50%; transform:translate(-50%, -50%); background: var(--card-bg); padding:30px; border-radius:20px; box-shadow:0 10px 50px rgba(0,0,0,0.5); z-index:100; text-align:center; width:95%; max-width: 600px; border: 2px solid var(--border-color); max-height: 85vh; overflow-y: auto;}
-        .store-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 15px; }
-        .store-item { background: var(--background); padding: 15px; border-radius: 15px; border: 2px solid var(--border-color); display: flex; flex-direction: column; align-items: center; justify-content: space-between; transition: transform 0.2s; }
-        .store-item:hover { transform: translateY(-3px); border-color: #f1c40f; }
-        .store-icon { font-size: 45px; margin-bottom: 5px; }
-        .store-name { font-size: 14px; font-weight: bold; color: var(--text); margin-bottom: 10px; line-height: 1.2; height: 34px; display:flex; align-items:center; justify-content:center;}
-        .btn-buy { background: #f39c12; color: white; border: none; padding: 8px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; transition: background 0.2s;}
-        .btn-buy:hover { background: #e67e22; }
-        .btn-buy:disabled { background: #bdc3c7; cursor: not-allowed; }
-        .btn-equip { background: var(--primary); color: white; border: none; padding: 8px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; }
-        .btn-equipped { background: var(--success); color: white; border: none; padding: 8px 15px; border-radius: 8px; font-weight: bold; cursor: default; width: 100%; }
-
-        canvas#confetti { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; }
-    </style>
+<meta charset="UTF-8">
+<title>Prueba — Teoría del Estado</title>
+<style>
+  :root{
+    --dark-blue:#1F3864;
+    --med-blue:#2E75B6;
+    --light-blue:#D6E4F0;
+    --light-gray:#F2F2F2;
+    --green:#2E7D32;
+    --green-bg:#E8F5E9;
+    --red:#C62828;
+    --red-bg:#FDECEA;
+    --white:#FFFFFF;
+  }
+  *{box-sizing:border-box;}
+  body{
+    font-family:Arial,Helvetica,sans-serif;
+    background:var(--light-gray);
+    margin:0;
+    padding:0;
+    color:#222;
+  }
+  header{
+    background:var(--dark-blue);
+    color:var(--white);
+    padding:28px 24px 22px;
+    text-align:center;
+  }
+  header h1{margin:0 0 6px;font-size:26px;}
+  header p{margin:0;font-size:14px;color:#cfe0f5;}
+  .container{
+    max-width:860px;
+    margin:0 auto;
+    padding:22px 18px 60px;
+  }
+  .tabs{
+    display:flex;
+    gap:10px;
+    margin:18px 0 22px;
+  }
+  .tab-btn{
+    flex:1;
+    padding:14px 10px;
+    border:2px solid var(--med-blue);
+    background:var(--white);
+    color:var(--dark-blue);
+    font-weight:bold;
+    font-size:15px;
+    border-radius:8px;
+    cursor:pointer;
+    transition:.15s;
+  }
+  .tab-btn.active{
+    background:var(--med-blue);
+    color:var(--white);
+  }
+  .scorebar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    background:var(--white);
+    border:1px solid #ddd;
+    border-radius:8px;
+    padding:12px 16px;
+    margin-bottom:18px;
+    font-size:14px;
+    color:var(--dark-blue);
+    font-weight:bold;
+  }
+  .scorebar button{
+    background:var(--dark-blue);
+    color:var(--white);
+    border:none;
+    padding:8px 14px;
+    border-radius:6px;
+    font-size:13px;
+    cursor:pointer;
+    font-weight:bold;
+  }
+  .scorebar button:hover{background:var(--med-blue);}
+  .section{display:none;}
+  .section.active{display:block;}
+  .qcard{
+    background:var(--white);
+    border:1px solid #ddd;
+    border-left:5px solid var(--med-blue);
+    border-radius:8px;
+    padding:18px 20px;
+    margin-bottom:16px;
+  }
+  .qnum{
+    display:inline-block;
+    background:var(--light-blue);
+    color:var(--dark-blue);
+    font-size:12px;
+    font-weight:bold;
+    padding:3px 9px;
+    border-radius:12px;
+    margin-bottom:8px;
+  }
+  .qtext{
+    font-size:15.5px;
+    font-weight:bold;
+    color:#222;
+    margin-bottom:14px;
+    line-height:1.4;
+  }
+  .options{
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+  }
+  .opt-btn{
+    text-align:left;
+    padding:11px 14px;
+    border:2px solid #ccc;
+    background:var(--white);
+    border-radius:7px;
+    cursor:pointer;
+    font-size:14.5px;
+    color:#222;
+    transition:.12s;
+  }
+  .opt-btn:hover:not(:disabled){border-color:var(--med-blue);background:#F7FBFF;}
+  .opt-btn:disabled{cursor:default;}
+  .opt-btn.correct{
+    background:var(--green-bg);
+    border-color:var(--green);
+    color:var(--green);
+    font-weight:bold;
+  }
+  .opt-btn.incorrect{
+    background:var(--red-bg);
+    border-color:var(--red);
+    color:var(--red);
+    font-weight:bold;
+  }
+  .feedback{
+    margin-top:12px;
+    padding:12px 14px;
+    border-radius:7px;
+    font-size:14px;
+    line-height:1.45;
+    display:none;
+  }
+  .feedback.show{display:block;}
+  .feedback.ok{background:var(--green-bg);color:var(--green);border:1px solid var(--green);}
+  .feedback.bad{background:var(--red-bg);color:var(--red);border:1px solid var(--red);}
+  .feedback b{color:inherit;}
+  footer{
+    text-align:center;
+    color:#888;
+    font-size:12px;
+    padding:18px 0 30px;
+  }
+</style>
 </head>
 <body>
 
-<!-- Whiteboard -->
-<div id="whiteboard-modal">
-    <div id="wb-question-text" class="wb-question"></div>
-    <canvas id="wb-canvas"></canvas>
-    <div class="wb-tools">
-        <button class="btn btn-secondary" onclick="clearWhiteboard()">🗑️ Limpiar</button>
-        <button class="btn btn-primary" onclick="closeWhiteboard()">✖️ Cerrar Pizarra</button>
-    </div>
+<header>
+  <h1>Prueba de Teoría del Estado</h1>
+  <p>Derecho Político · Verdadero/Falso y Selección Múltiple · Preguntas y opciones aleatorias en cada apertura</p>
+</header>
+
+<div class="container">
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="vf">Verdadero / Falso</button>
+    <button class="tab-btn" data-tab="mc">Selección Múltiple</button>
+  </div>
+
+  <div class="scorebar">
+    <span id="scoreLabel">Puntaje: 0 / 0</span>
+    <button id="reshuffleBtn">🔀 Volver a mezclar</button>
+  </div>
+
+  <div class="section active" id="section-vf"></div>
+  <div class="section" id="section-mc"></div>
+
 </div>
 
-<!-- Minigame -->
-<div id="minigame-screen">
-    <canvas id="mg-canvas"></canvas>
-    <div class="mg-ui">
-        <div id="mg-score">Puntos: 0</div>
-        <div id="mg-time">⏱️ 30s</div>
-    </div>
-    <button class="btn btn-error mg-close" onclick="endMinigame()" style="background:#e74c3c; color:white;">Salir del Recreo</button>
-</div>
-
-<!-- Avatar Selector -->
-<div id="avatar-modal">
-    <h2 style="color:var(--text); margin-bottom:10px;">Elige tu Avatar</h2>
-    <input type="text" id="name-input" value="Rocío" style="width:100%; padding:10px; border-radius:10px; border:2px solid var(--border-color); font-size:18px; text-align:center; font-family:'Nunito'; background:var(--background); color:var(--text);">
-    <div class="avatar-grid" id="avatar-grid"></div>
-    <button class="btn btn-primary" style="width:100%;" onclick="closeAvatarModal()">Guardar</button>
-</div>
-
-<!-- Badges Modal -->
-<div id="badges-modal">
-    <h2 style="color:var(--text); margin-bottom:20px;">Tus Logros 🏆</h2>
-    <div id="badges-grid"></div>
-    <button class="btn btn-primary" style="width:100%; margin-top:20px;" onclick="closeBadgesModal()">Volver</button>
-</div>
-
-<!-- Badge Unlock Popup -->
-<div id="badge-popup" class="badge-popup">
-    <div class="badge-popup-icon">🏅</div>
-    <div class="badge-popup-text">
-        <h4>¡Logro Desbloqueado!</h4>
-        <p id="badge-popup-desc">Has ganado una medalla.</p>
-    </div>
-</div>
-
-<!-- Store Modal -->
-<div id="store-modal">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-        <h2 style="color:var(--text); margin:0;">Tienda Mágica 🛒</h2>
-        <div class="xp-text" style="font-size:18px; color:#f39c12; font-weight:900;" id="store-xp"></div>
-    </div>
-    
-    <h3 style="color:var(--primary); text-align:left; margin-bottom:10px;">Avatares Especiales</h3>
-    <div id="store-avatars" class="store-grid"></div>
-    
-    <h3 style="color:var(--primary); text-align:left; margin-top:20px; margin-bottom:10px;">Fondos Mágicos</h3>
-    <div id="store-themes" class="store-grid"></div>
-    
-    <button class="btn btn-primary" style="width:100%; margin-top:20px;" onclick="closeStoreModal()">Cerrar Tienda</button>
-</div>
-
-<div class="app-container">
-    <canvas id="confetti"></canvas>
-    <header>
-        <button class="theme-toggle" onclick="toggleTheme()" title="Modo Día/Noche" id="theme-btn">🌙</button>
-        <h1>SIMCE 4° Básico</h1>
-        <div id="timer" class="timer-display">⏱️ 05:00</div>
-    </header>
-
-    <div class="content">
-        <!-- Pantalla de Inicio -->
-        <div id="home-screen" class="home-screen">
-            <div class="profile-section">
-                <div class="avatar-box" id="profile-avatar" onclick="openAvatarModal()">👧</div>
-                <div class="profile-info">
-                    <h2 id="profile-name">Rocío</h2>
-                    <div class="level-text" id="profile-level">Nivel 1: 🌱 Aprendiz</div>
-                    <div class="xp-bar-container">
-                        <div class="xp-bar-fill" id="profile-progress-fill"></div>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 5px;">
-                        <div style="display: flex; gap: 8px;">
-                            <button class="btn btn-secondary" style="padding: 4px 10px; font-size: 14px; border-radius: 8px;" onclick="openBadgesModal()">🏆 Logros</button>
-                            <button class="btn" style="padding: 4px 10px; font-size: 14px; border-radius: 8px; background: #f39c12; color:white; border:none;" onclick="openStoreModal()">🛒 Tienda</button>
-                        </div>
-                        <div class="xp-text" id="profile-xp" style="margin:0;">0 / 50 XP</div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="subject-cards" id="subject-cards-container">
-                <!-- Tarjetas generadas dinámicamente -->
-            </div>
-        </div>
-
-        <!-- Pantalla de Ensayo -->
-        <div id="exam-screen" class="exam-screen">
-            <!-- Boss Battle UI -->
-            <div id="boss-ui">
-                <div style="text-align: center;">
-                    <div style="font-size: 45px;" id="player-sprite">👧</div>
-                    <div style="color: #e74c3c; font-size: 20px; min-width: 80px;" id="player-hp">❤️❤️❤️</div>
-                </div>
-                <div style="font-size: 28px; font-weight: 900; color: var(--text); opacity:0.3;">VS</div>
-                <div style="text-align: center;">
-                    <div style="font-size: 55px; transition: transform 0.2s;" id="boss-sprite">🦖</div>
-                    <div style="width: 100px; height: 12px; background: var(--border-color); border-radius: 6px; margin: 5px auto 0 auto; overflow: hidden;">
-                        <div id="boss-hp-fill" style="height: 100%; width: 100%; background: #e74c3c; transition: width 0.3s;"></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Barra Normal -->
-            <div class="progress-bar" id="normal-progress-bar">
-                <div id="progress-fill" class="progress-fill"></div>
-            </div>
-            <!-- Barra Relámpago -->
-            <div id="lightning-bar-container" class="lightning-bar-container">
-                <div id="lightning-bar-fill" class="lightning-bar-fill"></div>
-            </div>
-
-            <div id="reading-container" class="reading-text" style="display: none;"></div>
-
-            <div class="question-container">
-                <div class="question-header">
-                    <div id="question-text" class="question-text">¿Pregunta?</div>
-                    <div class="tools-container">
-                        <button class="tool-btn whiteboard-btn" onclick="openWhiteboard()" title="Pizarra Mágica">✏️</button>
-                        <button class="tool-btn" onclick="readAloud()" title="Leer en voz alta">🔊</button>
-                    </div>
-                </div>
-                <div id="question-image" class="question-image" style="display: none;"></div>
-                <div id="options-container" class="options">
-                    <!-- Opciones se insertan con JS -->
-                </div>
-            </div>
-
-            <div class="actions">
-                <button class="btn btn-secondary" onclick="goHome()">🏠 Salir</button>
-                <button id="next-btn" class="btn btn-primary" onclick="nextQuestion()" disabled>Siguiente ➡️</button>
-            </div>
-        </div>
-
-        <!-- Pantalla de Resultados -->
-        <div id="results-screen" class="results-screen">
-            <h2 class="results-message" id="results-msg">¡Terminaste!</h2>
-            <div class="score-circle" id="score-display">5/5</div>
-            <div class="xp-gain" id="xp-gain-display" style="display:none;">+50 XP 🌟</div>
-            <p style="font-size: 18px; color: var(--text); opacity:0.8; margin-bottom: 10px;" id="score-text">¡Excelente trabajo!</p>
-            
-            <button id="btn-recreo" class="btn btn-success" style="display:none; margin-bottom:20px; font-size:20px;" onclick="startMinigame()">🎈 Jugar Recreo (Premio)</button>
-
-            <div id="corrections-container" class="corrections" style="display: none;">
-                <h3 style="margin-bottom: 15px; color: var(--primary);">Modo Tutor: Revisión de Respuestas 💡</h3>
-                <div id="corrections-list"></div>
-            </div>
-
-            <div class="actions" style="margin-top: 30px; width: 100%; justify-content: center;">
-                <button class="btn btn-primary" onclick="goHome()">Volver al Inicio 🏠</button>
-            </div>
-        </div>
-    </div>
-</div>
+<footer>Material de apoyo académico — Teoría del Estado · Generado para estudio personal</footer>
 
 <script>
-    // --- AUDIO SYSTEM ---
-    let audioCtx = null;
-    function playSound(type) {
-        try {
-            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-            
-            const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
-            osc.connect(gain); gain.connect(audioCtx.destination);
-            
-            if (type === 'click') {
-                osc.type = 'sine'; osc.frequency.setValueAtTime(600, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(800, audioCtx.currentTime + 0.05);
-                gain.gain.setValueAtTime(0.1, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
-                osc.start(); osc.stop(audioCtx.currentTime + 0.1);
-            } else if (type === 'correct') {
-                osc.type = 'triangle'; osc.frequency.setValueAtTime(400, audioCtx.currentTime); osc.frequency.setValueAtTime(600, audioCtx.currentTime + 0.1);
-                gain.gain.setValueAtTime(0.1, audioCtx.currentTime); gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.3);
-                osc.start(); osc.stop(audioCtx.currentTime + 0.3);
-            } else if (type === 'win') {
-                osc.type = 'square'; osc.frequency.setValueAtTime(440, audioCtx.currentTime); osc.frequency.setValueAtTime(554, audioCtx.currentTime + 0.1); osc.frequency.setValueAtTime(659, audioCtx.currentTime + 0.2); osc.frequency.setValueAtTime(880, audioCtx.currentTime + 0.3);
-                gain.gain.setValueAtTime(0.1, audioCtx.currentTime); gain.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.6);
-                osc.start(); osc.stop(audioCtx.currentTime + 0.6);
-            } else if (type === 'pop') {
-                osc.type = 'sine'; osc.frequency.setValueAtTime(1200, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(300, audioCtx.currentTime + 0.1);
-                gain.gain.setValueAtTime(0.2, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
-                osc.start(); osc.stop(audioCtx.currentTime + 0.1);
-            } else if (type === 'error') {
-                osc.type = 'sawtooth'; osc.frequency.setValueAtTime(150, audioCtx.currentTime); osc.frequency.exponentialRampToValueAtTime(50, audioCtx.currentTime + 0.3);
-                gain.gain.setValueAtTime(0.2, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
-                osc.start(); osc.stop(audioCtx.currentTime + 0.3);
-            }
-        } catch(e) {}
-    }
+// ════════════════════════════════════════════
+// BANCO DE PREGUNTAS — VERDADERO / FALSO
+// ════════════════════════════════════════════
+const bancoVF = [
+  { text: "El concepto «Estado» fue utilizado por primera vez por Nicolás Maquiavelo, quien empleó la expresión «lo Stato» en su obra «El Príncipe» (siglo XVI).", answer: true,
+    explain: "Correcto: el documento señala expresamente que Maquiavelo fue el primero en utilizar el concepto «lo Stato» para designar el status político." },
+  { text: "El concepto de Estado, como forma de organización política, surgió en la Antigüedad clásica griega.", answer: false,
+    explain: "El concepto de «Estado» surgió a partir del Renacimiento, en Florencia (República Italiana), no en la Antigüedad clásica." },
+  { text: "Según Jellinek, el Estado puede analizarse desde tres puntos de vista: político, social y jurídico.", answer: true,
+    explain: "Correcto: Jellinek aborda el concepto de Estado desde las concepciones sociológica, política y jurídica." },
+  { text: "Para Hans Kelsen, el Estado es la personificación del orden jurídico que lo constituye y con el cual se identifica.", answer: true,
+    explain: "Correcto: esa es exactamente la concepción jurídica de Estado atribuida a Kelsen en el documento." },
+  { text: "Según André Hauriou, el Estado es una agrupación humana fijada en un territorio, orientada al bien común y dotada de poderes de coerción.", answer: true,
+    explain: "Correcto: esta es la definición de Hauriou, calificada en el documento como una de las más completas." },
+  { text: "«Pueblo» y «Población» son, según el documento, conceptos perfectamente sinónimos.", answer: false,
+    explain: "Son conceptos distintos: la Población es un grupo humano más abarcador (todos con derechos y obligaciones civiles), mientras que el Pueblo corresponde solo a los ciudadanos con derecho a voto." },
+  { text: "El territorio del Estado debe ser estable, excluyente y limitado.", answer: true,
+    explain: "Correcto: el documento exige expresamente estas tres condiciones para el territorio estatal." },
+  { text: "Según Kelsen, el territorio es el ámbito espacial de aplicación de las normas y preceptos emanados del Estado.", answer: true,
+    explain: "Correcto: así lo señala el documento al citar a Kelsen sobre la función del territorio." },
+  { text: "La soberanía, tal como se define en el documento, admite la existencia de otro poder de igual o mayor jerarquía que el Estado.", answer: false,
+    explain: "La soberanía implica precisamente lo contrario: es el carácter supremo de un poder que no depende de, ni es igualado por, otro poder." },
+  { text: "El monopolio legítimo de la fuerza implica que el Estado posee la violencia física legítima y puede imponer mandatos con posibilidad de coacción.", answer: true,
+    explain: "Correcto: así se define esta característica del poder estatal en el documento." },
+  { text: "Según el documento, el poder institucionalizado significa que los gobernantes son los titulares del poder, no el Estado.", answer: false,
+    explain: "Es al revés: el Estado es el TITULAR del poder; los gobernantes son solo agentes de su ejercicio." },
+  { text: "El término «Estado de Derecho» (Rechsstaat) se originó en la doctrina publicista alemana del siglo XIX, con Robert von Mohl.", answer: true,
+    explain: "Correcto: el documento atribuye el origen del término a Robert von Mohl en esa tradición doctrinal." },
+  { text: "El principio de juridicidad establece que los órganos del Estado pueden actuar libremente, sin necesidad de autorización del ordenamiento jurídico.", answer: false,
+    explain: "Es lo contrario: el principio de juridicidad establece que los órganos del Estado solo pueden hacer lo que el ordenamiento jurídico les autoriza." },
+  { text: "El fin objetivo del Estado, común a todos los Estados según el documento, es el bien común.", answer: true,
+    explain: "Correcto: el bien común es identificado como el fin objetivo y general de todo Estado." },
+  { text: "El fin subjetivo del Estado es siempre idéntico, sin importar la doctrina política que cada Estado adopte.", answer: false,
+    explain: "El fin subjetivo supone contenidos variables del bien común y depende del Estado y de la doctrina política de que se trate." },
+  { text: "Según la hipótesis naturalista de Aristóteles, la Polis es anterior al individuo.", answer: true,
+    explain: "Correcto: Aristóteles sostiene que «la Polis es por naturaleza anterior al individuo», pues el todo es anterior a la parte." },
+  { text: "Para Aristóteles, el hombre puede vivir en sociedad sin organización política alguna.", answer: false,
+    explain: "Aristóteles sostiene lo contrario: vivir en sociedad presupone vivir políticamente, por lo que no existe una etapa pre-política." },
+  { text: "Según Hobbes, en el estado de naturaleza existe una «guerra de todos contra todos».", answer: true,
+    explain: "Correcto: esa es la condición natural del género humano descrita por Hobbes en el Leviatán." },
+  { text: "Para John Locke, el valor más importante que el Estado debe asegurar es la propiedad.", answer: true,
+    explain: "Correcto: el documento señala que para Locke uno de los valores más importantes a proteger es la propiedad, junto con la vida y la libertad." },
+  { text: "Según Rousseau, el contrato social es un contrato expreso y escrito, formalmente celebrado entre los ciudadanos.", answer: false,
+    explain: "El documento señala que es un contrato HIPOTÉTICO, con cláusulas TÁCITAS, no un documento expreso y escrito." },
+  { text: "El Estado Unitario se caracteriza por tener un solo centro de imputación política y un solo sistema jurídico.", answer: true,
+    explain: "Correcto: esas son características explícitas del Estado Unitario según el documento." },
+  { text: "La descentralización administrativa implica que el órgano creado carece de personalidad jurídica propia y depende jerárquicamente del órgano central.", answer: false,
+    explain: "Eso describe a la DESCONCENTRACIÓN. La descentralización, en cambio, implica personalidad jurídica y patrimonio propio, sin subordinación jerárquica (aunque sujeta a tutela)." },
+  { text: "En el Estado Federal, la soberanía se distribuye entre el Estado federal y los Estados miembros.", answer: false,
+    explain: "El documento indica que la soberanía es indivisible: todas las atribuciones de soberanía corresponden al Estado Federal, que ha absorbido la de los Estados miembros." },
+  { text: "El sistema bicameral, con una cámara proporcional a la población y otra de representación igualitaria de los Estados miembros, es una característica típica del Estado Federal.", answer: true,
+    explain: "Correcto: el documento señala el sistema bicameral como una de las características fundamentales del orden federal." },
+];
 
-    // --- PROFILE, XP, STORE & BADGES SYSTEM ---
-    let playerProfile = JSON.parse(localStorage.getItem('rocioProfile')) || { xp: 0, avatar: '👧', name: 'Rocío', items: [], activeTheme: 'default' };
-    if(!playerProfile.items) playerProfile.items = [];
-    if(!playerProfile.activeTheme) playerProfile.activeTheme = 'default';
-    
-    const AVATARS_FREE = ['👧','👦','🐱','🐶','🦊','🚀','🌟','🧙‍♀️'];
-    const LEVELS = [{ max: 50, name: "Aprendiz", icon: "🌱" }, { max: 150, name: "Exploradora", icon: "🧭" }, { max: 300, name: "Cerebrito", icon: "🧠" }, { max: 600, name: "Genio", icon: "⚡" }, { max: 1000, name: "Maestra SIMCE", icon: "👑" }, { max: Infinity, name: "Leyenda", icon: "🌟" }];
+// ════════════════════════════════════════════
+// BANCO DE PREGUNTAS — SELECCIÓN MÚLTIPLE
+// ════════════════════════════════════════════
+const bancoMC = [
+  { text: "¿Quién utilizó por primera vez el concepto «lo Stato» en el siglo XVI?",
+    options: ["Jean Bodin", "Nicolás Maquiavelo", "Thomas Hobbes", "Max Weber"], correctIndex: 1,
+    explain: "Maquiavelo empleó «lo Stato» en «El Príncipe» para designar el status político, dando origen al concepto moderno de Estado." },
+  { text: "¿Desde qué tres puntos de vista analiza Jellinek el concepto de Estado?",
+    options: ["Económico, social y militar", "Político, social y jurídico", "Histórico, cultural y religioso", "Territorial, demográfico e institucional"], correctIndex: 1,
+    explain: "Jellinek aborda el Estado desde las concepciones sociológica, política y jurídica, atendiendo a las distintas facetas que adopta." },
+  { text: "¿Qué autor define al Estado como «la personificación del orden jurídico que lo constituye»?",
+    options: ["Hermann Heller", "Georges Burdeau", "Hans Kelsen", "André Hauriou"], correctIndex: 2,
+    explain: "Esa es la concepción jurídica de Estado atribuida a Hans Kelsen en el documento." },
+  { text: "En la analogía del «tren» empleada en el documento para explicar al Estado, ¿qué representan los rieles?",
+    options: ["Los gobernantes", "La constitución y las leyes", "El pueblo", "El territorio"], correctIndex: 1,
+    explain: "Los rieles representan la constitución y las leyes, que delimitan el tránsito del Estado hacia el bien común sin desviarse." },
+  { text: "¿Cuáles son las tres condiciones de existencia del Estado señaladas en el documento?",
+    options: ["Pueblo, nación y soberanía", "Grupo humano, territorio y poder", "Gobierno, ley y ejército", "Constitución, tribunales y Congreso"], correctIndex: 1,
+    explain: "El documento identifica como condiciones de existencia del Estado: el grupo humano (pueblo), el territorio y el poder." },
+  { text: "¿Qué concepto representa, según el documento, solo a los ciudadanos con derecho a voto?",
+    options: ["Población", "Nación", "Pueblo", "Comunidad"], correctIndex: 2,
+    explain: "El «Pueblo» es un grupo humano menos abarcador que la población, pues presupone el status jurídico de ciudadano (cuerpo electoral)." },
+  { text: "¿Cómo clasifica el documento el territorio en cuanto espacio geográfico?",
+    options: ["Urbano, rural y fronterizo", "Suelo, subsuelo, espacio aéreo y espacio marítimo", "Continental, insular y marítimo", "Público, privado y fiscal"], correctIndex: 1,
+    explain: "El documento clasifica el territorio en suelo, subsuelo, espacio aéreo y espacio marítimo." },
+  { text: "¿Cuáles son las características del Poder Estatal señaladas en el documento?",
+    options: ["Soberanía, poder temporal, monopolio legítimo de la fuerza y poder institucionalizado", "Legitimidad, eficacia, legalidad y representatividad", "Centralización, descentralización, desconcentración y delegación", "Autonomía, independencia, supremacía y dominación"], correctIndex: 0,
+    explain: "El documento enumera exactamente estas cuatro características del poder estatal." },
+  { text: "La soberanía interna se caracteriza, según el documento, por:",
+    options: ["Independencia", "Supremacía y dominación", "Monopolio de la fuerza", "Participación"], correctIndex: 1,
+    explain: "El esquema del documento ubica «supremacía» y «dominación» bajo la soberanía interna, mientras que la «independencia» corresponde a la soberanía externa." },
+  { text: "¿En qué consiste el «monopolio legítimo de la fuerza» del Estado?",
+    options: ["El Estado posee la violencia física legítima e impone mandatos con posibilidad de coacción", "Solo las Fuerzas Armadas pueden ejercer la fuerza, sin control estatal", "El Estado comparte el uso legítimo de la fuerza con organizaciones privadas", "El poder se ejerce exclusivamente mediante persuasión, sin coacción"], correctIndex: 0,
+    explain: "El monopolio legítimo de la fuerza significa que el Estado posee la violencia física legítima, pudiendo imponer sanciones penales, civiles y administrativas." },
+  { text: "¿Qué autor acuñó el término «Rechsstaat» (Estado de Derecho)?",
+    options: ["Hans Kelsen", "Robert von Mohl", "Cea Egaña", "Lucas Verdú"], correctIndex: 1,
+    explain: "El documento atribuye la acuñación del término «Rechsstaat» a Robert von Mohl, dentro de la doctrina publicista alemana del siglo XIX." },
+  { text: "¿Cuál de las siguientes opciones NO figura entre los elementos del Estado de Derecho señalados en el documento?",
+    options: ["Supremacía constitucional", "Principio de juridicidad", "Principio de control", "Sufragio universal obligatorio"], correctIndex: 3,
+    explain: "Los elementos señalados son: supremacía constitucional, principio de juridicidad, principio de control, principio de responsabilidad y principio de separación de poderes. El sufragio universal obligatorio no se menciona como elemento del Estado de Derecho en este documento." },
+  { text: "El fin objetivo del Estado, común a todos los Estados según el documento, es:",
+    options: ["La seguridad nacional", "El bien común", "El desarrollo económico", "La soberanía popular"], correctIndex: 1,
+    explain: "El bien común es identificado expresamente como el fin objetivo y general de todo Estado." },
+  { text: "El fin subjetivo del Estado depende principalmente de:",
+    options: ["La doctrina política que cada Estado adopte", "El tamaño del territorio", "El número de habitantes", "La forma de gobierno exclusivamente"], correctIndex: 0,
+    explain: "El documento indica que el fin subjetivo supone contenidos variables, y cada doctrina política responde de distinta forma a los medios y al rol del Estado." },
+  { text: "¿Qué autor sostiene la hipótesis naturalista sobre el origen del Estado?",
+    options: ["Thomas Hobbes", "John Locke", "Aristóteles", "Jean-Jacques Rousseau"], correctIndex: 2,
+    explain: "Aristóteles sostiene la hipótesis naturalista, según la cual la Polis es por naturaleza anterior al individuo." },
+  { text: "Según Hobbes, ¿cuáles son las tres causas de la discordia en la naturaleza humana?",
+    options: ["La competencia, la desconfianza y la gloria", "La propiedad, la libertad y la igualdad", "El hambre, la guerra y la enfermedad", "La religión, la raza y la lengua"], correctIndex: 0,
+    explain: "Hobbes identifica la competencia, la desconfianza y la gloria como las tres causas de la discordia en el estado de naturaleza." },
+  { text: "Para John Locke, el Estado es indispensable principalmente para:",
+    options: ["Imponer una religión oficial", "Asegurar la propiedad privada y las libertades individuales", "Organizar ejércitos permanentes", "Centralizar el comercio internacional"], correctIndex: 1,
+    explain: "Locke sostiene que el Estado o Sociedad Civil es indispensable para asegurar la propiedad privada y las libertades individuales (derechos naturales)." },
+  { text: "Según Rousseau, el contrato social busca que cada asociado:",
+    options: ["Renuncie completamente a su libertad", "Permanezca tan libre como antes, obedeciendo solo a la voluntad general", "Se subordine a un monarca absoluto", "Forme alianzas militares con otros pueblos"], correctIndex: 1,
+    explain: "Rousseau busca una forma de asociación en que cada asociado, uniéndose a todos, no obedezca sino a sí mismo y permanezca tan libre como antes, mediante la voluntad general." },
+  { text: "¿Cuál es la diferencia esencial entre «forma de Estado» y «forma de gobierno»?",
+    options: ["No existen diferencias; son sinónimos", "La forma de Estado atiende a la distribución espacial del poder; la forma de gobierno, a su ejercicio y a la designación de los gobernantes", "La forma de Estado se refiere solo a monarquías; la forma de gobierno, a repúblicas", "La forma de gobierno determina el territorio; la forma de Estado, la economía"], correctIndex: 1,
+    explain: "La forma de Estado considera la distribución espacial (territorial) de la actividad del Estado; la forma de gobierno concierne al ejercicio del poder y la designación de los gobernantes." },
+  { text: "¿Cuál de las siguientes es una característica del Estado Federal según el documento?",
+    options: ["Un solo sistema jurídico unificado, sin constituciones locales", "Soberanía dividida entre el centro y los Estados miembros", "Sistema bicameral y Constitución Federal con principio de supremacía", "Centralización absoluta de todas las funciones públicas"], correctIndex: 2,
+    explain: "El Estado Federal se caracteriza, entre otros rasgos, por un sistema bicameral y una Constitución Federal a la que están subordinadas las constituciones locales (principio de supremacía)." },
+  { text: "La descentralización administrativa, a diferencia de la desconcentración, se caracteriza por:",
+    options: ["Carecer de personalidad jurídica propia", "Tener personalidad jurídica y patrimonio propio", "Depender jerárquicamente del órgano central en todas sus decisiones", "No estar sujeta a ningún tipo de control"], correctIndex: 1,
+    explain: "La descentralización confiere personalidad jurídica y patrimonio propio al órgano creado por ley, sin subordinación jerárquica, aunque sujeta a la tutela del poder central." },
+];
 
-    const STORE_ITEMS = [
-        { id: 'av_dragon', type: 'avatar', icon: '🐉', name: 'Dragón', cost: 200 },
-        { id: 'av_princesa', type: 'avatar', icon: '👑', name: 'Corona', cost: 250 },
-        { id: 'av_unicornio', type: 'avatar', icon: '🦄', name: 'Unicornio', cost: 300 },
-        { id: 'av_alien', type: 'avatar', icon: '👽', name: 'Marciano', cost: 200 },
-        { id: 'av_hada', type: 'avatar', icon: '🧚‍♀️', name: 'Hada', cost: 350 },
-        { id: 'av_sirena', type: 'avatar', icon: '🧜‍♀️', name: 'Sirena', cost: 300 },
-        { id: 'th_galaxy', type: 'theme', icon: '🌌', name: 'Fondo Galaxia', cost: 600 },
-        { id: 'th_forest', type: 'theme', icon: '🌲', name: 'Bosque Mágico', cost: 500 },
-        { id: 'th_rainbow', type: 'theme', icon: '🌈', name: 'Arcoíris', cost: 800 }
-    ];
+// ════════════════════════════════════════════
+// LÓGICA: aleatorización, render, evaluación
+// ════════════════════════════════════════════
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
 
-    function applyTheme() {
-        document.body.classList.remove('theme-galaxy', 'theme-forest', 'theme-rainbow');
-        if(playerProfile.activeTheme && playerProfile.activeTheme !== 'default') {
-            document.body.classList.add(playerProfile.activeTheme.replace('th_', 'theme-'));
-        }
-    }
-    applyTheme();
+let totalAnswered = 0;
+let totalCorrect = 0;
 
-    function openStoreModal() {
-        document.getElementById('store-xp').textContent = playerProfile.xp + " XP 🌟";
-        const gridAv = document.getElementById('store-avatars'); gridAv.innerHTML = '';
-        const gridTh = document.getElementById('store-themes'); gridTh.innerHTML = '';
-        
-        const isDef = playerProfile.activeTheme === 'default';
-        gridTh.innerHTML += `<div class="store-item"><div class="store-icon">☀️</div><div class="store-name">Fondo Normal</div>${isDef ? `<button class="btn-equipped">Usando ✅</button>` : `<button class="btn-equip" onclick="equipItem('default')">Usar</button>`}</div>`;
+function updateScore(){
+  document.getElementById('scoreLabel').textContent = `Puntaje: ${totalCorrect} / ${totalAnswered}`;
+}
 
-        STORE_ITEMS.forEach(item => {
-            const isOwned = playerProfile.items.includes(item.id);
-            const isEquipped = (item.type === 'avatar' && playerProfile.avatar === item.icon) || (item.type === 'theme' && playerProfile.activeTheme === item.id);
-            let btnHtml = '';
-            if(isEquipped) btnHtml = `<button class="btn-equipped">Usando ✅</button>`;
-            else if(isOwned) btnHtml = `<button class="btn-equip" onclick="equipItem('${item.id}')">Usar</button>`;
-            else {
-                const canAfford = playerProfile.xp >= item.cost;
-                btnHtml = `<button class="btn-buy" ${canAfford ? '' : 'disabled'} onclick="buyItem('${item.id}')">${item.cost} XP</button>`;
-            }
-            const cardHtml = `<div class="store-item"><div class="store-icon">${item.icon}</div><div class="store-name">${item.name}</div>${btnHtml}</div>`;
-            if(item.type === 'avatar') gridAv.innerHTML += cardHtml; else gridTh.innerHTML += cardHtml;
-        });
-        document.getElementById('store-modal').style.display = 'block';
-    }
-    function closeStoreModal() { document.getElementById('store-modal').style.display = 'none'; }
-    function buyItem(id) { const item = STORE_ITEMS.find(x => x.id === id); if(playerProfile.xp >= item.cost && !playerProfile.items.includes(id)) { playerProfile.xp -= item.cost; playerProfile.items.push(id); playSound('win'); saveProfile(); openStoreModal(); updateProfileUI(); } }
-    function equipItem(id) { if(id === 'default') { playerProfile.activeTheme = 'default'; } else { const item = STORE_ITEMS.find(x => x.id === id); if(item.type === 'avatar') playerProfile.avatar = item.icon; else if(item.type === 'theme') playerProfile.activeTheme = item.id; } applyTheme(); playSound('click'); saveProfile(); openStoreModal(); updateProfileUI(); }
-
-    function saveProfile() { localStorage.setItem('rocioProfile', JSON.stringify(playerProfile)); }
-    function getLevelInfo(xp) {
-        let currentLvl = 1, info = LEVELS[0], nextMax = LEVELS[0].max, prevMax = 0;
-        for(let i=0; i<LEVELS.length; i++) { if(xp < LEVELS[i].max) { info = LEVELS[i]; currentLvl = i + 1; nextMax = LEVELS[i].max; prevMax = i > 0 ? LEVELS[i-1].max : 0; break; } }
-        let progress = nextMax !== Infinity ? ((xp - prevMax) / (nextMax - prevMax)) * 100 : 100;
-        return { level: currentLvl, name: info.name, icon: info.icon, progress, xp, nextMax };
-    }
-    function updateProfileUI() {
-        const info = getLevelInfo(playerProfile.xp);
-        document.getElementById('profile-avatar').textContent = playerProfile.avatar; document.getElementById('profile-name').textContent = playerProfile.name;
-        document.getElementById('profile-level').textContent = `Nivel ${info.level}: ${info.icon} ${info.name}`;
-        document.getElementById('profile-xp').textContent = `${Math.floor(info.xp)} / ${info.nextMax} XP`;
-        document.getElementById('profile-progress-fill').style.width = `${info.progress}%`;
-    }
-    function openAvatarModal() {
-        const grid = document.getElementById('avatar-grid'); grid.innerHTML = '';
-        let available = [...AVATARS_FREE];
-        STORE_ITEMS.forEach(i => { if(i.type === 'avatar' && playerProfile.items.includes(i.id)) available.push(i.icon); });
-        available.forEach(a => { const div = document.createElement('div'); div.className = 'avatar-option'; div.textContent = a; div.onclick = () => { playerProfile.avatar = a; closeAvatarModal(); }; grid.appendChild(div); });
-        document.getElementById('name-input').value = playerProfile.name; document.getElementById('avatar-modal').style.display = 'block';
-    }
-    function closeAvatarModal() { playerProfile.name = document.getElementById('name-input').value || 'Rocío'; saveProfile(); updateProfileUI(); document.getElementById('avatar-modal').style.display = 'none'; }
-
-    // Badges
-    const BADGES = [
-        { id: 'first_exam', icon: '📝', title: 'Primeros Pasos', desc: 'Completaste tu primer ensayo.' },
-        { id: 'perfect', icon: '⭐', title: 'Mente Brillante', desc: 'Obtuviste todo correcto en un ensayo.' },
-        { id: 'artist', icon: '🎨', title: 'Picasso', desc: 'Usaste la Pizarra Mágica.' },
-        { id: 'speedy', icon: '⚡', title: 'Rayo Veloz', desc: 'Lograste un Modo Relámpago perfecto.' },
-        { id: 'boss_slayer', icon: '🦖', title: 'Cazadora de Monstruos', desc: 'Derrotaste al Monstruo en el Modo Batalla.' },
-        { id: 'reader', icon: '📚', title: 'Ratón de Biblioteca', desc: 'Terminaste 3 ensayos de Lenguaje.' }
-    ];
-    let playerBadges = JSON.parse(localStorage.getItem('rocioBadges')) || [];
-    function saveBadges() { localStorage.setItem('rocioBadges', JSON.stringify(playerBadges)); }
-    function unlockBadge(id) {
-        if(!playerBadges.includes(id)) {
-            playerBadges.push(id); saveBadges();
-            const b = BADGES.find(x => x.id === id);
-            document.getElementById('badge-popup-desc').textContent = b.title;
-            const pop = document.getElementById('badge-popup');
-            pop.classList.add('show'); playSound('win');
-            setTimeout(() => pop.classList.remove('show'), 4000);
-        }
-    }
-    function openBadgesModal() {
-        const grid = document.getElementById('badges-grid'); grid.innerHTML = '';
-        BADGES.forEach(b => {
-            const isUnl = playerBadges.includes(b.id);
-            grid.innerHTML += `<div class="badge-item ${isUnl ? 'unlocked' : ''}"><div class="badge-icon">${isUnl ? b.icon : '🔒'}</div><div class="badge-info"><h4>${isUnl ? b.title : '???'}</h4><p>${isUnl ? b.desc : 'Sigue jugando para descubrirlo.'}</p></div></div>`;
-        });
-        document.getElementById('badges-modal').style.display = 'block';
-    }
-    function closeBadgesModal() { document.getElementById('badges-modal').style.display = 'none'; }
-
-    // --- THEME ---
-    function toggleTheme() { document.body.classList.toggle('dark-mode'); const isDark = document.body.classList.contains('dark-mode'); document.getElementById('theme-btn').textContent = isDark ? '☀️' : '🌙'; localStorage.setItem('simceTheme', isDark ? 'dark' : 'light'); }
-    if(localStorage.getItem('simceTheme') === 'dark') { document.body.classList.add('dark-mode'); document.getElementById('theme-btn').textContent = '☀️'; }
-
-    // --- EXAMS DATA ---
-    function getProgress() { return JSON.parse(localStorage.getItem('rocioSimceProgress')) || {}; }
-    function saveExamProgress(id, score) { const p = getProgress(); p[id] = score; localStorage.setItem('rocioSimceProgress', JSON.stringify(p)); }
-
-    const examsData = {
-        math: [
-            { title: "Matemática - Ensayo 1", icon: "🧮", questions: [
-                { q: "¿Cuál es el resultado de sumar 124 + 358?", options: [{t:"472",c:false},{t:"482",c:true},{t:"492",c:false},{t:"582",c:false}], exp: "4+8=12 (reserva 1), 2+5+1=8, 1+3=4. Da 482." },
-                { q: "En un bus hay 45 pasajeros, bajan 12 y suben 8. ¿Cuántos quedan?", options: [{t:"33",c:false},{t:"41",c:true},{t:"53",c:false},{t:"65",c:false}], exp: "45 - 12 = 33. Luego 33 + 8 = 41." },
-                { q: "Rocío compró 3 cajas. Cada caja tiene 12 lápices. ¿Cuántos en total?", options: [{t:"15",c:false},{t:"24",c:false},{t:"36",c:true},{t:"48",c:false}], exp: "3 veces 12, es decir, 3 x 12 = 36." },
-                { q: "¿Qué número es mayor que 4.567 y menor que 4.600?", options: [{t:"4.560",c:false},{t:"4.589",c:true},{t:"4.601",c:false},{t:"4.650",c:false}], exp: "4.589 se encuentra entre 4.567 y 4.600." },
-                { q: "Tienes $5.000 y compras un cuaderno de $2.350, ¿vuelto?", options: [{t:"$2.650",c:true},{t:"$3.650",c:false},{t:"$2.350",c:false},{t:"$3.000",c:false}], exp: "5000 - 2350 = 2650." }
-            ]},
-            { title: "Matemática - Ensayo 2", icon: "📐", questions: [
-                { q: "Secuencia: 2, 4, 6, 8, ... ¿Qué número sigue?", options: [{t:"9",c:false},{t:"10",c:true},{t:"12",c:false},{t:"14",c:false}], exp: "Va saltando de 2 en 2. Después de 8 es 10." },
-                { q: "Un cuadrado tiene un lado de 4 cm, ¿cuánto mide su perímetro?", options: [{t:"8 cm",c:false},{t:"12 cm",c:false},{t:"16 cm",c:true},{t:"20 cm",c:false}], exp: "4 lados iguales: 4+4+4+4 = 16." },
-                { q: "Resta: 500 - 185 = ?", options: [{t:"215",c:false},{t:"315",c:true},{t:"325",c:false},{t:"485",c:false}], exp: "500 - 185 = 315." },
-                { q: "Observa la imagen. ¿Qué fracción representa la parte pintada?", svg: `<svg viewBox="0 0 100 100" width="100" height="100"><circle cx="50" cy="50" r="45" fill="#f1c40f" stroke="#e67e22" stroke-width="4"/><path d="M50 5 A45 45 0 0 1 50 95 Z" fill="#e74c3c" stroke="#e67e22" stroke-width="2"/></svg>`, options: [{t:"1/2",c:true},{t:"1/3",c:false},{t:"1/4",c:false},{t:"2/3",c:false}], exp: "Representa un círculo dividido en 2 mitades, es 1/2." },
-                { q: "24 dulces repartidos igual entre 4 amigas. ¿Cuántos cada una?", options: [{t:"4",c:false},{t:"5",c:false},{t:"6",c:true},{t:"8",c:false}], exp: "24 dividido en 4 es 6." }
-            ]},
-            { title: "Matemática - Ensayo 3", icon: "🕒", questions: [
-                { q: "El reloj marca las 03:00. ¿Qué hora será en 2 horas más?", options: [{t:"05:00",c:true},{t:"04:00",c:false},{t:"06:00",c:false},{t:"02:00",c:false}], exp: "3 + 2 = 5. Serán las 05:00." },
-                { q: "¿Cuántos lados tiene un triángulo?", options: [{t:"3",c:true},{t:"2",c:false},{t:"4",c:false},{t:"5",c:false}], exp: "Un triángulo tiene 3 lados." },
-                { q: "¿Cuánto es 7 x 8?", options: [{t:"56",c:true},{t:"54",c:false},{t:"64",c:false},{t:"48",c:false}], exp: "7 x 8 es 56." },
-                { q: "En 4.321, ¿qué dígito representa las centenas?", options: [{t:"3",c:true},{t:"4",c:false},{t:"2",c:false},{t:"1",c:false}], exp: "Unidades(1), Decenas(2), Centenas(3), Unidades de mil(4)." },
-                { q: "Si repartes 15 galletas entre 3 amigos, ¿cuántas recibe cada uno?", options: [{t:"5",c:true},{t:"3",c:false},{t:"4",c:false},{t:"6",c:false}], exp: "15 dividido en 3 es 5." }
-            ]},
-            { title: "Matemática - Ensayo 4", icon: "⭐", questions: [
-                { q: "¿Cuál es la mitad de 100?", options: [{t:"50",c:true},{t:"25",c:false},{t:"40",c:false},{t:"10",c:false}], exp: "Dividir 100 en 2 partes iguales da 50." },
-                { q: "¿Qué número es mayor?", options: [{t:"9.001",c:true},{t:"8.990",c:false},{t:"8.099",c:false},{t:"9.000",c:false}], exp: "9.001 es el número más grande." },
-                { q: "Tienes 2 billetes de $1.000 y 3 monedas de $100. ¿Cuánto dinero tienes?", options: [{t:"$2.300",c:true},{t:"$2.000",c:false},{t:"$1.300",c:false},{t:"$3.200",c:false}], exp: "2000 + 300 = 2300." },
-                { q: "Completa la serie: 10, 20, 30, __, 50.", options: [{t:"40",c:true},{t:"35",c:false},{t:"45",c:false},{t:"60",c:false}], exp: "Va saltando de 10 en 10. Después del 30 va el 40." },
-                { q: "¿Cuánto es 25 + 25 + 25?", options: [{t:"75",c:true},{t:"50",c:false},{t:"100",c:false},{t:"85",c:false}], exp: "25+25=50. 50+25=75." }
-            ]},
-            { title: "Matemática - Ensayo 5", icon: "📊", questions: [
-                { q: "Si 1 metro tiene 100 centímetros. ¿Cuántos centímetros hay en 3 metros?", options: [{t:"300 cm",c:true},{t:"103 cm",c:false},{t:"30 cm",c:false},{t:"100 cm",c:false}], exp: "Multiplicamos 3 x 100 = 300 centímetros." },
-                { q: "¿Cuántas caras tiene un cubo (como un dado)?", options: [{t:"6",c:true},{t:"4",c:false},{t:"8",c:false},{t:"12",c:false}], exp: "Un cubo tiene 6 caras planas (por eso el dado llega hasta el 6)." },
-                { q: "Camilo tiene $1.500. Compra un helado de $800 y un dulce de $200. ¿Cuánto le sobra?", options: [{t:"$500",c:true},{t:"$700",c:false},{t:"$1.000",c:false},{t:"$300",c:false}], exp: "Gasta 800+200=1000. Le sobra 1500-1000=500." },
-                { q: "Si hoy es martes 10. ¿Qué fecha será el próximo martes?", options: [{t:"17",c:true},{t:"15",c:false},{t:"20",c:false},{t:"11",c:false}], exp: "Una semana tiene 7 días. 10 + 7 = 17." },
-                { q: "¿Cuál de estas fracciones es igual a la mitad (1/2)?", options: [{t:"2/4",c:true},{t:"1/3",c:false},{t:"3/5",c:false},{t:"4/10",c:false}], exp: "Si partes algo en 4 y tomas 2, es lo mismo que tomar la mitad." }
-            ]},
-            { title: "Matemática - Ensayo 6", icon: "🧩", questions: [
-                { q: "¿Cuánto es 15 x 3?", options: [{t:"45",c:true},{t:"30",c:false},{t:"55",c:false},{t:"35",c:false}], exp: "15 + 15 = 30. 30 + 15 = 45." },
-                { q: "Observa el patrón: Círculo, Cuadrado, Triángulo, Círculo, Cuadrado... ¿Qué sigue?", options: [{t:"Triángulo",c:true},{t:"Círculo",c:false},{t:"Cuadrado",c:false},{t:"Rombo",c:false}], exp: "El patrón se repite cada 3 figuras." },
-                { q: "Tienes un billete de $10.000 y compras un regalo de $6.500. ¿Cuál es tu vuelto?", options: [{t:"$3.500",c:true},{t:"$4.500",c:false},{t:"$3.000",c:false},{t:"$2.500",c:false}], exp: "10.000 - 6.500 = 3.500." },
-                { q: "¿Qué figura es completamente redonda y puede rodar?", options: [{t:"Esfera",c:true},{t:"Cilindro",c:false},{t:"Cono",c:false},{t:"Cubo",c:false}], exp: "La esfera es como una pelota, puede rodar en cualquier dirección." },
-                { q: "En un curso hay 12 niñas y 14 niños. Si faltan 3 estudiantes, ¿cuántos hay en clases?", options: [{t:"23",c:true},{t:"26",c:false},{t:"29",c:false},{t:"20",c:false}], exp: "Total=12+14=26. Si faltan 3, 26-3=23." }
-            ]}
-        ],
-        lang: [
-            { title: "Lenguaje - Ensayo 1", icon: "📚", text: "<h3>La Cigarra y la Hormiga</h3><p>Durante el verano, una cigarra cantaba y jugaba. Mientras, una pequeña hormiga trabajaba recolectando granos. Cuando llegó el frío invierno, la cigarra no tenía qué comer. Fue a pedirle ayuda a la hormiga. La hormiga le dijo: '¿Qué hacías tú en verano?'. La cigarra respondió: 'Cantaba y disfrutaba'. Entonces la hormiga cerró la puerta: 'Pues ahora, baila'.</p>", questions: [
-                { q: "¿Qué hacía la cigarra durante el verano?", options: [{t:"Juntar comida",c:false},{t:"Cantar y jugar",c:true},{t:"Dormir",c:false},{t:"Construir una casa",c:false}], exp: "El texto dice que la cigarra cantaba y jugaba." },
-                { q: "¿Qué hacía la hormiga durante el verano?", options: [{t:"Cantar",c:false},{t:"Descansar",c:false},{t:"Trabajar recolectando",c:true},{t:"Jugar",c:false}], exp: "La hormiga trabajaba recolectando granos." },
-                { q: "¿Por qué la cigarra pidió ayuda?", options: [{t:"Quería jugar",c:false},{t:"Tenía frío y hambre",c:true},{t:"Devolver un favor",c:false},{t:"Cantar",c:false}], exp: "No tenía qué comer en invierno." },
-                { q: "¿Qué nos enseña esta fábula? (Moraleja)", options: [{t:"El invierno es aburrido",c:false},{t:"Mejor cantar que trabajar",c:false},{t:"Debemos ser precavidos",c:true},{t:"Las hormigas son malas",c:false}], exp: "Debemos pensar en el futuro y trabajar para estar preparados." },
-                { q: "¿Qué tipo de texto leíste?", options: [{t:"Noticia",c:false},{t:"Poema",c:false},{t:"Fábula",c:true},{t:"Receta",c:false}], exp: "Narración de animales con una moraleja." }
-            ]},
-            { title: "Lenguaje - Ensayo 2", icon: "♻️", text: "<h3>El reciclaje en la escuela</h3><p>El reciclaje ayuda al planeta. En nuestra escuela, hay tres contenedores. El <strong>azul</strong> es para papeles limpios. El <strong>amarillo</strong> es para plásticos, como botellas. Por último, el <strong>verde</strong> es para restos de comida, para hacer tierra fértil. ¡Reciclar da un respiro a la Tierra!</p>", questions: [
-                { q: "¿Para qué sirve el contenedor azul?", options: [{t:"Plásticos",c:false},{t:"Comida",c:false},{t:"Papeles",c:true},{t:"Vidrio",c:false}], exp: "El contenedor azul es para papeles limpios." },
-                { q: "¿Dónde botar una botella de plástico?", options: [{t:"Contenedor amarillo",c:true},{t:"Contenedor azul",c:false},{t:"Contenedor verde",c:false},{t:"Basurero normal",c:false}], exp: "Amarillo es para plásticos." },
-                { q: "¿Qué se hace con restos del contenedor verde?", options: [{t:"Juguetes",c:false},{t:"Tierra fértil",c:true},{t:"Papel",c:false},{t:"Limpiar pisos",c:false}], exp: "Sirven para hacer tierra fértil." },
-                { q: "¿Cuál es el mensaje principal?", options: [{t:"La basura huele mal",c:false},{t:"Comprar basureros",c:false},{t:"Reciclar en casa",c:false},{t:"Reciclar cuida el planeta",c:true}], exp: "El texto busca incentivar el reciclaje para ayudar a la Tierra." },
-                { q: "¿Qué significa 'dar un respiro a la Tierra'?", options: [{t:"Plantar árboles",c:false},{t:"Contaminar menos",c:true},{t:"Pasear",c:false},{t:"Hacer ejercicio",c:false}], exp: "Significa ayudar a la naturaleza evitando la contaminación." }
-            ]},
-            { title: "Lenguaje - Ensayo 3", icon: "🌍", text: "<h3>El Sistema Solar</h3><p>Vivimos en un planeta llamado <strong>Tierra</strong>, que forma parte del Sistema Solar. En el centro de este sistema hay una estrella gigante y muy caliente llamada <strong>Sol</strong>. Ocho planetas giran alrededor de él. Algunos planetas son de roca, como Marte, y otros son gigantes de gas, como Júpiter. La Tierra es especial porque es el único planeta conocido que tiene agua líquida y vida.</p>", questions: [
-                { q: "¿Qué es el Sol?", options: [{t:"Una estrella gigante",c:true},{t:"Un planeta",c:false},{t:"Un satélite",c:false},{t:"Una roca",c:false}], exp: "El texto dice que el Sol es una estrella gigante." },
-                { q: "¿Cuántos planetas giran alrededor del Sol?", options: [{t:"Ocho",c:true},{t:"Siete",c:false},{t:"Nueve",c:false},{t:"Diez",c:false}], exp: "Ocho planetas giran alrededor de él." },
-                { q: "¿De qué está hecho Marte según el texto?", options: [{t:"Roca",c:true},{t:"Gas",c:false},{t:"Agua",c:false},{t:"Hielo",c:false}], exp: "Menciona 'planetas de roca, como Marte'." },
-                { q: "¿Por qué es especial la Tierra?", options: [{t:"Porque tiene agua líquida y vida",c:true},{t:"Porque es gigante",c:false},{t:"Porque es de gas",c:false},{t:"Porque es el centro",c:false}], exp: "Es el único conocido con agua líquida y vida." },
-                { q: "¿Qué tipo de texto es este?", options: [{t:"Informativo",c:true},{t:"Fábula",c:false},{t:"Cuento",c:false},{t:"Receta",c:false}], exp: "Nos entrega información real sobre el Sistema Solar." }
-            ]},
-            { title: "Lenguaje - Ensayo 4", icon: "🌻", text: "<h3>La Semilla</h3><p>Oculta en el corazón<br>de una pequeña semilla,<br>bajo la tierra, profunda,<br>una planta en paz dormía.<br><br>—¡Despierta! —dijo el calor.<br>—¡Despierta! —la lluvia fría.<br>La planta, que oyó el llamado,<br>quiso ver lo que ocurría,<br>se puso un vestido verde<br>y estiró su cuerpo al día.</p>", questions: [
-                { q: "¿Dónde estaba la semilla?", options: [{t:"Bajo la tierra",c:true},{t:"En una maceta",c:false},{t:"En el agua",c:false},{t:"En el cielo",c:false}], exp: "El poema dice 'bajo la tierra, profunda'." },
-                { q: "¿Quiénes le dicen a la planta que despierte?", options: [{t:"El calor y la lluvia",c:true},{t:"El jardinero",c:false},{t:"El sol y la luna",c:false},{t:"Los animales",c:false}], exp: "Dicen: '¡Despierta! —dijo el calor. ¡Despierta! —la lluvia fría.'" },
-                { q: "¿Qué significa que 'se puso un vestido verde'?", options: [{t:"Que le crecieron hojas",c:true},{t:"Que se compró ropa",c:false},{t:"Que se pintó",c:false},{t:"Que se escondió",c:false}], exp: "Es una metáfora que indica que le salieron hojitas verdes." },
-                { q: "¿Qué tipo de texto leíste?", options: [{t:"Poema",c:true},{t:"Cuento",c:false},{t:"Noticia",c:false},{t:"Carta",c:false}], exp: "Está escrito en versos y tiene rimas, es un poema." },
-                { q: "¿Qué emoción o actitud muestra la planta al final?", options: [{t:"Curiosidad por ver el día",c:true},{t:"Miedo",c:false},{t:"Enojo",c:false},{t:"Tristeza",c:false}], exp: "Dice que 'quiso ver lo que ocurría' y salió al día." }
-            ]},
-            { title: "Lenguaje - Ensayo 5", icon: "✉️", text: "<h3>Una carta especial</h3><p><em>Santiago, 15 de Mayo</em><br><br>Querida abuela:<br>Te escribo para contarte que ayer gané el campeonato de fútbol del colegio. Metí el último gol justo antes de que sonara el timbre. ¡Fue emocionante! Espero que vengas pronto a visitarme para mostrarte mi medalla brillante.<br><br>Con mucho amor,<br>Tomás</p>", questions: [
-                { q: "¿Quién escribió la carta?", options: [{t:"Tomás",c:true},{t:"La abuela",c:false},{t:"El profesor",c:false},{t:"El árbitro",c:false}], exp: "La carta está firmada por Tomás al final." },
-                { q: "¿A quién va dirigida la carta?", options: [{t:"A la abuela",c:true},{t:"A Tomás",c:false},{t:"Al colegio",c:false},{t:"A su mamá",c:false}], exp: "El saludo dice 'Querida abuela'." },
-                { q: "¿Qué noticia importante cuenta Tomás?", options: [{t:"Gañó un campeonato de fútbol",c:true},{t:"Se compró una medalla",c:false},{t:"Viajará a Santiago",c:false},{t:"Se cambió de colegio",c:false}], exp: "Dice 'gané el campeonato de fútbol del colegio'." },
-                { q: "¿Cuándo metió el último gol?", options: [{t:"Justo antes que sonara el timbre",c:true},{t:"En la mañana",c:false},{t:"En el recreo",c:false},{t:"Cuando llegó la abuela",c:false}], exp: "El texto dice 'justo antes de que sonara el timbre'." },
-                { q: "¿Qué tipo de texto es este?", options: [{t:"Una carta",c:true},{t:"Un cuento",c:false},{t:"Un poema",c:false},{t:"Una noticia",c:false}], exp: "Tiene fecha, saludo, mensaje y despedida; es una carta." }
-            ]},
-            { title: "Lenguaje - Ensayo 6", icon: "🪁", text: "<h3>Cómo hacer un volantín</h3><p><strong>Materiales:</strong><br>- Palillos de coligüe o madera ligera.<br>- Papel volantín de colores.<br>- Hilo de algodón.<br>- Pegamento.<br><br><strong>Instrucciones:</strong><br>1. Corta el papel en forma de cuadrado.<br>2. Pega un palillo recto en el medio y otro doblado en forma de arco.<br>3. Amarra los tirantes de hilo con mucho cuidado para que no se rompa el papel.<br>4. ¡Sal a elevarlo donde haya viento!</p>", questions: [
-                { q: "¿Para qué sirve este texto?", options: [{t:"Para enseñar a construir algo",c:true},{t:"Para contar un cuento de un volantín",c:false},{t:"Para vender volantines",c:false},{t:"Para invitar a jugar",c:false}], exp: "Es un texto instructivo que enseña los pasos para hacer un volantín." },
-                { q: "¿Qué forma debe tener el papel?", options: [{t:"Cuadrado",c:true},{t:"Círculo",c:false},{t:"Triángulo",c:false},{t:"Rombo",c:false}], exp: "El paso 1 dice 'Corta el papel en forma de cuadrado'." },
-                { q: "¿Qué material se usa para amarrar los tirantes?", options: [{t:"Hilo de algodón",c:true},{t:"Lana",c:false},{t:"Plástico",c:false},{t:"Alambre",c:false}], exp: "En la lista de materiales dice 'Hilo de algodón'." },
-                { q: "¿Qué tipo de texto acabas de leer?", options: [{t:"Instructivo",c:true},{t:"Poema",c:false},{t:"Noticia",c:false},{t:"Carta",c:false}], exp: "Da instrucciones y pasos a seguir, por lo tanto es un texto instructivo." },
-                { q: "¿Por qué hay que amarrar los tirantes con cuidado?", options: [{t:"Para no romper el papel",c:true},{t:"Para que el hilo no se enrede",c:false},{t:"Para no cortarse los dedos",c:false},{t:"Para que no se escape",c:false}], exp: "El texto dice 'con mucho cuidado para que no se rompa el papel'." }
-            ]}
-        ]
-    };
-
-    function shuffleArray(array) { for (let i = array.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [array[i], array[j]] = [array[j], array[i]]; } }
-
-    function generateRandomMathQuestions(amount = 5) {
-        const types = [
-            () => { const a=Math.floor(Math.random()*800)+100, b=Math.floor(Math.random()*800)+100, ans=a+b; return { q:`¿Cuál es el resultado de sumar ${a} + ${b}?`, options:[{t:`${ans}`,c:true},{t:`${ans+10}`,c:false},{t:`${ans-100}`,c:false},{t:`${ans+100}`,c:false}], exp:`Sumando: ${a} + ${b} = ${ans}.` }; },
-            () => { const a=Math.floor(Math.random()*500)+500, b=Math.floor(Math.random()*300)+100, ans=a-b; return { q:`Calcula la resta: ${a} - ${b} = ?`, options:[{t:`${ans}`,c:true},{t:`${ans+10}`,c:false},{t:`${ans-10}`,c:false},{t:`${ans+100}`,c:false}], exp:`Al restar ${a} menos ${b} el resultado es ${ans}.` }; },
-            () => { const s=Math.floor(Math.random()*30)+30, d=Math.floor(Math.random()*15)+5, u=Math.floor(Math.random()*15)+5, ans=s-d+u; return { q:`En un bus hay ${s} pasajeros, en la parada bajan ${d} y suben ${u}. ¿Cuántos quedan?`, options:[{t:`${ans}`,c:true},{t:`${ans-2}`,c:false},{t:`${ans+2}`,c:false},{t:`${s-d}`,c:false}], exp:`Primero bajan: ${s} - ${d} = ${s-d}. Luego suben: ${s-d} + ${u} = ${ans}.` }; },
-            () => { const c=Math.floor(Math.random()*6)+3, i=Math.floor(Math.random()*10)+5, ans=c*i; return { q:`Rocío compró ${c} cajas. Cada caja tiene ${i} lápices. ¿Cuántos lápices compró en total?`, options:[{t:`${ans}`,c:true},{t:`${ans+i}`,c:false},{t:`${ans-i}`,c:false},{t:`${c+i}`,c:false}], exp:`Es una multiplicación: ${c} veces ${i}, es decir, ${c} x ${i} = ${ans}.` }; },
-            () => { const billete = [2000, 5000, 10000][Math.floor(Math.random() * 3)], costo = Math.floor(Math.random() * ((billete-500)/10))*10 + 100, ans = billete - costo; return { q:`Tienes $${billete} y compras un cuaderno de $${costo}, ¿cuánto vuelto recibes?`, options:[{t:`$${ans}`,c:true},{t:`$${ans+1000}`,c:false},{t:`$${ans-100}`,c:false},{t:`$${ans+100}`,c:false}], exp:`Restamos lo que pagaste a tu billete: ${billete} - ${costo} = ${ans}.` }; },
-            () => { const salto=Math.floor(Math.random()*4)+2, s=Math.floor(Math.random()*10)+2, ans=s+salto*4; return { q:`Secuencia: ${s}, ${s+salto}, ${s+salto*2}, ${s+salto*3}, ... ¿Qué número sigue?`, options:[{t:`${ans}`,c:true},{t:`${ans-1}`,c:false},{t:`${ans+1}`,c:false},{t:`${ans+salto}`,c:false}], exp:`La secuencia salta de ${salto} en ${salto}. Sigue el ${ans}.` }; },
-            () => { const lado=Math.floor(Math.random()*10)+3, ans=lado*4; return { q:`Si un cuadrado tiene un lado de ${lado} cm, ¿cuánto mide su perímetro?`, options:[{t:`${ans} cm`,c:true},{t:`${ans+2} cm`,c:false},{t:`${lado*2} cm`,c:false},{t:`${ans+4} cm`,c:false}], exp:`El perímetro de un cuadrado es 4 veces su lado. ${lado} x 4 = ${ans} cm.` }; },
-            () => { const am=Math.floor(Math.random()*4)+3, pa=Math.floor(Math.random()*5)+3, tot=am*pa; return { q:`Tienes ${tot} dulces y quieres repartirlos igual entre ${am} amigas. ¿Cuántos le tocan a cada una?`, options:[{t:`${pa}`,c:true},{t:`${pa+1}`,c:false},{t:`${pa-1}`,c:false},{t:`${pa+2}`,c:false}], exp:`División: ${tot} dividido en ${am} es igual a ${pa}.` }; },
-            () => { const h=Math.floor(Math.random()*8)+1, sum=Math.floor(Math.random()*3)+1, ans=h+sum; return { q:`El reloj marca las 0${h}:00. ¿Qué hora será en ${sum} horas más?`, options:[{t:`0${ans}:00`,c:true},{t:`0${ans+1}:00`,c:false},{t:`0${ans-1}:00`,c:false},{t:`0${h}:00`,c:false}], exp:`Sumamos las horas: ${h} + ${sum} = ${ans}.` }; },
-            () => { const base=Math.floor(Math.random()*8000)+1000, ans=base+Math.floor(Math.random()*50)+10; return { q:`¿Qué número es mayor que ${base}?`, options:[{t:`${ans}`,c:true},{t:`${base-10}`,c:false},{t:`${base-100}`,c:false},{t:`${base-50}`,c:false}], exp:`De las opciones, ${ans} es el único número más grande que ${base}.` }; }
-        ];
-        shuffleArray(types);
-        let res = [];
-        for(let i=0; i<amount; i++) { let q = types[i % types.length](); shuffleArray(q.options); res.push(q); }
-        return res;
-    }
-
-    // --- APP LOGIC ---
-    let currentExamQuestions = [], currentSubject = '', currentExamId = '', currentQuestionIndex = 0;
-    let userAnswers = [], userSelectedText = [], timerInterval = null, timeLeft = 0;
-    
-    let isLightningMode = false, lightningTimeLeft = 20, lightningInterval = null;
-    let isBossMode = false, bossHP = 10, playerHP = 3;
-    let currentHomeMenu = 'main';
-
-    const screenHome = document.getElementById('home-screen'), screenExam = document.getElementById('exam-screen'), screenResults = document.getElementById('results-screen');
-    const cardsContainer = document.getElementById('subject-cards-container'), readingContainer = document.getElementById('reading-container'), questionText = document.getElementById('question-text'), questionImage = document.getElementById('question-image'), optionsContainer = document.getElementById('options-container'), nextBtn = document.getElementById('next-btn'), progressFill = document.getElementById('progress-fill'), timerDisplay = document.getElementById('timer');
-
-    function renderHome() {
-        updateProfileUI(); cardsContainer.innerHTML = ''; const prog = getProgress();
-        
-        if (currentHomeMenu === 'main') {
-            // Main Screen: 2 Big Icons + Boss
-            const divMath = document.createElement('div'); divMath.className = `card math`; divMath.style.width = "calc(50% - 15px)"; divMath.style.minWidth = "150px"; divMath.style.flexGrow = "1";
-            divMath.onclick = () => { currentHomeMenu = 'math'; renderHome(); };
-            divMath.innerHTML = `<div class="card-icon" style="font-size:60px;">🧮</div><h3 style="font-size:22px;">Matemática</h3><p>Números</p>`;
-            cardsContainer.appendChild(divMath);
-
-            const divLang = document.createElement('div'); divLang.className = `card lang`; divLang.style.width = "calc(50% - 15px)"; divLang.style.minWidth = "150px"; divLang.style.flexGrow = "1";
-            divLang.onclick = () => { currentHomeMenu = 'lang'; renderHome(); };
-            divLang.innerHTML = `<div class="card-icon" style="font-size:60px;">📚</div><h3 style="font-size:22px;">Lenguaje</h3><p>Lectura</p>`;
-            cardsContainer.appendChild(divLang);
-
-            const divBoss = document.createElement('div'); divBoss.className = `card`; divBoss.style.width = "100%"; divBoss.style.borderBottom = "5px solid #8e44ad"; divBoss.style.background = "linear-gradient(45deg, var(--card-bg), rgba(142, 68, 173, 0.1))"; 
-            divBoss.onclick = () => startBossBattle();
-            divBoss.innerHTML = `<div class="card-icon" style="font-size:50px;">🦖</div><h3 style="font-size:24px;">Batalla Final</h3><p>Derrota al Monstruo (Mixto)</p>`;
-            cardsContainer.appendChild(divBoss);
-
+function renderVF(){
+  const data = shuffle(bancoVF);
+  const container = document.getElementById('section-vf');
+  container.innerHTML = '';
+  data.forEach((q, idx) => {
+    const card = document.createElement('div');
+    card.className = 'qcard';
+    const orderedOptions = Math.random() < 0.5 ? [true, false] : [false, true];
+    card.innerHTML = `
+      <div class="qnum">Pregunta ${idx+1} de ${data.length}</div>
+      <div class="qtext">${q.text}</div>
+      <div class="options">
+        ${orderedOptions.map(val => `<button class="opt-btn" data-val="${val}">${val ? 'VERDADERO' : 'FALSO'}</button>`).join('')}
+      </div>
+      <div class="feedback"></div>
+    `;
+    const buttons = card.querySelectorAll('.opt-btn');
+    const feedback = card.querySelector('.feedback');
+    buttons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const chosen = btn.getAttribute('data-val') === 'true';
+        buttons.forEach(b => b.disabled = true);
+        totalAnswered++;
+        if(chosen === q.answer){
+          btn.classList.add('correct');
+          totalCorrect++;
+          feedback.className = 'feedback show ok';
+          feedback.innerHTML = `<b>¡Correcto!</b> ${q.explain}`;
         } else {
-            // Submenu (Math or Lang)
-            const subject = currentHomeMenu;
-            
-            // Volver
-            const divBackContainer = document.createElement('div');
-            divBackContainer.style.width = "100%"; divBackContainer.style.textAlign = "left"; divBackContainer.style.marginBottom = "10px";
-            divBackContainer.innerHTML = `<button class="btn btn-secondary" style="padding: 10px 20px; font-size: 16px; border-radius: 12px;" onclick="currentHomeMenu='main'; renderHome();">⬅️ Volver</button>`;
-            cardsContainer.appendChild(divBackContainer);
-
-            // Título Fijos
-            const titleEnsayos = document.createElement('div'); titleEnsayos.style.width = "100%"; titleEnsayos.style.textAlign = "left"; titleEnsayos.style.color = "var(--text)"; titleEnsayos.style.fontSize = "20px"; titleEnsayos.style.fontWeight = "bold"; titleEnsayos.style.marginBottom = "10px"; titleEnsayos.style.marginTop = "10px"; titleEnsayos.innerHTML = "Ensayos de Práctica 📝";
-            cardsContainer.appendChild(titleEnsayos);
-
-            examsData[subject].forEach((exam, index) => {
-                const id = `${subject}_${index}`; const isCompleted = prog[id] !== undefined;
-                const div = document.createElement('div'); div.className = `card ${subject}`; div.style.width = "calc(50% - 15px)"; div.style.minWidth = "150px"; div.style.flexGrow = "1";
-                div.onclick = () => startNormalExam(subject, index);
-                let badgeHtml = ''; if(isCompleted) badgeHtml = `<div class="badge-completed" style="display:flex;">${prog[id] === 5 ? "⭐" : "✅"}</div>`;
-                div.innerHTML = `${badgeHtml}<div class="card-icon">${exam.icon}</div><h3>Ensayo ${index + 1}</h3><p>5 preguntas</p>`;
-                cardsContainer.appendChild(div);
-            });
-
-            // Título Modos
-            const titleEspecial = document.createElement('div'); titleEspecial.style.width = "100%"; titleEspecial.style.textAlign = "left"; titleEspecial.style.color = "var(--text)"; titleEspecial.style.fontSize = "20px"; titleEspecial.style.fontWeight = "bold"; titleEspecial.style.marginBottom = "10px"; titleEspecial.style.marginTop = "20px"; titleEspecial.innerHTML = "Modos Especiales ⭐";
-            cardsContainer.appendChild(titleEspecial);
-
-            const divInf = document.createElement('div'); divInf.className = `card random`; divInf.style.width = "calc(50% - 15px)"; divInf.style.minWidth = "150px"; divInf.style.flexGrow = "1";
-            divInf.onclick = () => startRandomExam(subject, false);
-            divInf.innerHTML = `<div class="card-icon">🔀</div><h3>Desafío Infinito</h3><p>Azar</p>`;
-            cardsContainer.appendChild(divInf);
-
-            const divLight = document.createElement('div'); divLight.className = `card lightning`; divLight.style.width = "calc(50% - 15px)"; divLight.style.minWidth = "150px"; divLight.style.flexGrow = "1";
-            divLight.onclick = () => startRandomExam(subject, true);
-            divLight.innerHTML = `<div class="card-icon">⚡</div><h3>Relámpago</h3><p>Tiempo</p>`;
-            cardsContainer.appendChild(divLight);
+          btn.classList.add('incorrect');
+          buttons.forEach(b => { if((b.getAttribute('data-val')==='true') === q.answer) b.classList.add('correct'); });
+          feedback.className = 'feedback show bad';
+          feedback.innerHTML = `<b>Incorrecto.</b> La respuesta correcta es <b>${q.answer ? 'VERDADERO' : 'FALSO'}</b>. ${q.explain}`;
         }
-    }
+        updateScore();
+      });
+    });
+    container.appendChild(card);
+  });
+}
 
-    function startNormalExam(subject, index) {
-        isLightningMode = false; isBossMode = false;
-        const exam = examsData[subject][index];
-        currentSubject = subject; currentExamId = `${subject}_${index}`;
-        currentExamQuestions = JSON.parse(JSON.stringify(exam.questions));
-        currentExamQuestions.forEach(q => shuffleArray(q.options));
-        prepareExamUI(exam.text);
-    }
-
-    function startRandomExam(subject, lightning) {
-        isLightningMode = lightning; isBossMode = false;
-        currentSubject = subject; currentExamId = `${subject}_${lightning ? 'lightning' : 'random'}`;
-        
-        if (subject === 'math') {
-            currentExamQuestions = generateRandomMathQuestions(5);
-            prepareExamUI(null);
+function renderMC(){
+  const data = shuffle(bancoMC);
+  const container = document.getElementById('section-mc');
+  container.innerHTML = '';
+  data.forEach((q, idx) => {
+    const correctText = q.options[q.correctIndex];
+    const shuffledOptions = shuffle(q.options.map((opt, i) => ({ text: opt, isCorrect: i === q.correctIndex })));
+    const card = document.createElement('div');
+    card.className = 'qcard';
+    card.innerHTML = `
+      <div class="qnum">Pregunta ${idx+1} de ${data.length}</div>
+      <div class="qtext">${q.text}</div>
+      <div class="options">
+        ${shuffledOptions.map((opt, i) => `<button class="opt-btn" data-correct="${opt.isCorrect}">${String.fromCharCode(97+i)}) ${opt.text}</button>`).join('')}
+      </div>
+      <div class="feedback"></div>
+    `;
+    const buttons = card.querySelectorAll('.opt-btn');
+    const feedback = card.querySelector('.feedback');
+    buttons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const isCorrect = btn.getAttribute('data-correct') === 'true';
+        buttons.forEach(b => b.disabled = true);
+        totalAnswered++;
+        if(isCorrect){
+          btn.classList.add('correct');
+          totalCorrect++;
+          feedback.className = 'feedback show ok';
+          feedback.innerHTML = `<b>¡Correcto!</b> ${q.explain}`;
         } else {
-            let allQ = [];
-            examsData[subject].forEach(exam => { exam.questions.forEach(q => { let qC = JSON.parse(JSON.stringify(q)); if(exam.text) qC.ctxTxt = exam.text; allQ.push(qC); }); });
-            shuffleArray(allQ); currentExamQuestions = allQ.slice(0, 5); currentExamQuestions.forEach(q => shuffleArray(q.options));
-            prepareExamUI(currentExamQuestions[0].ctxTxt || null);
+          btn.classList.add('incorrect');
+          buttons.forEach(b => { if(b.getAttribute('data-correct')==='true') b.classList.add('correct'); });
+          feedback.className = 'feedback show bad';
+          feedback.innerHTML = `<b>Incorrecto.</b> La respuesta correcta es <b>"${correctText}"</b>. ${q.explain}`;
         }
-    }
+        updateScore();
+      });
+    });
+    container.appendChild(card);
+  });
+}
 
-    function startBossBattle() {
-        isLightningMode = false; isBossMode = true; currentSubject = 'mixed'; currentExamId = 'boss_battle';
-        bossHP = 10; playerHP = 3;
-        
-        let allQ = []; let langQ = [];
-        examsData.lang.forEach(exam => { exam.questions.forEach(q => { let qC = JSON.parse(JSON.stringify(q)); if(exam.text) qC.ctxTxt = exam.text; langQ.push(qC); }); });
-        shuffleArray(langQ);
-        
-        let mathQ = generateRandomMathQuestions(10);
-        allQ = [...mathQ, ...langQ.slice(0, 5)];
-        shuffleArray(allQ);
-        currentExamQuestions = allQ;
-        prepareExamUI(currentExamQuestions[0].ctxTxt || null);
-    }
+function renderAll(){
+  totalAnswered = 0;
+  totalCorrect = 0;
+  updateScore();
+  renderVF();
+  renderMC();
+}
 
-    function prepareExamUI(readingHTML) {
-        currentQuestionIndex = 0; userAnswers = []; userSelectedText = [];
-        document.getElementById('xp-gain-display').style.display = 'none'; document.getElementById('btn-recreo').style.display = 'none';
-        
-        if(isBossMode) {
-            document.getElementById('boss-ui').style.display = 'flex';
-            document.getElementById('player-sprite').textContent = playerProfile.avatar;
-            document.getElementById('player-hp').textContent = '❤️❤️❤️';
-            document.getElementById('boss-hp-fill').style.width = '100%';
-            document.getElementById('boss-sprite').textContent = ['🦖','🐉','👾','👹'][Math.floor(Math.random()*4)];
-            timerDisplay.style.display = 'none'; document.getElementById('normal-progress-bar').style.display = 'none'; document.getElementById('lightning-bar-container').style.display = 'none';
-        } else if(isLightningMode) {
-            document.getElementById('boss-ui').style.display = 'none'; timerDisplay.style.display = 'none'; document.getElementById('normal-progress-bar').style.display = 'none'; document.getElementById('lightning-bar-container').style.display = 'block';
-        } else {
-            document.getElementById('boss-ui').style.display = 'none'; document.getElementById('lightning-bar-container').style.display = 'none'; document.getElementById('normal-progress-bar').style.display = 'block';
-            timeLeft = 300; timerDisplay.style.display = 'flex'; timerDisplay.className = 'timer-display'; updateTimerText(); clearInterval(timerInterval); timerInterval = setInterval(timerTick, 1000);
-        }
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('section-' + btn.dataset.tab).classList.add('active');
+  });
+});
 
-        screenHome.style.display = 'none'; screenResults.style.display = 'none'; screenExam.style.display = 'flex';
-        if (readingHTML) { readingContainer.innerHTML = readingHTML; readingContainer.style.display = 'block'; } else { readingContainer.style.display = 'none'; }
-        loadQuestion();
-    }
+document.getElementById('reshuffleBtn').addEventListener('click', renderAll);
 
-    function timerTick() { timeLeft--; updateTimerText(); if(timeLeft <= 30) timerDisplay.classList.add('danger'); if(timeLeft <= 0) { clearInterval(timerInterval); finishExam(true); } }
-    function updateTimerText() { const m = Math.floor(timeLeft / 60).toString().padStart(2, '0'), s = (timeLeft % 60).toString().padStart(2, '0'); timerDisplay.innerHTML = `⏱️ ${m}:${s}`; }
-
-    function updateLightningBar() { const pct = (lightningTimeLeft / 20) * 100; const bar = document.getElementById('lightning-bar-fill'); bar.style.width = `${pct}%`; if(lightningTimeLeft <= 5) bar.style.background = '#c0392b'; else bar.style.background = '#e74c3c'; }
-
-    function loadQuestion() {
-        const qData = currentExamQuestions[currentQuestionIndex];
-        if(currentExamId.includes('random') || currentExamId.includes('lightning') || isBossMode) {
-            if (qData.ctxTxt) { readingContainer.innerHTML = qData.ctxTxt; readingContainer.style.display = 'block'; }
-            else readingContainer.style.display = 'none';
-        }
-        questionText.textContent = `${currentQuestionIndex + 1}. ${qData.q}`;
-        if (qData.svg) { questionImage.innerHTML = qData.svg; questionImage.style.display = 'block'; } else { questionImage.style.display = 'none'; }
-        
-        progressFill.style.width = `${(currentQuestionIndex / currentExamQuestions.length) * 100}%`;
-        optionsContainer.innerHTML = '';
-        const letters = ['A', 'B', 'C', 'D'];
-        qData.options.forEach((opt, idx) => {
-            const div = document.createElement('div'); div.className = 'option'; div.innerHTML = `<span class="option-letter">${letters[idx]}</span> <span>${opt.t}</span>`;
-            div.onclick = () => selectOption(opt, idx, div); optionsContainer.appendChild(div);
-        });
-        
-        nextBtn.disabled = true; 
-        if(isBossMode) nextBtn.textContent = "Atacar ⚔️"; else nextBtn.textContent = currentQuestionIndex === currentExamQuestions.length - 1 ? "Finalizar 🏁" : "Siguiente ➡️";
-
-        if(isLightningMode) {
-            clearInterval(lightningInterval); lightningTimeLeft = 20; updateLightningBar();
-            lightningInterval = setInterval(() => {
-                lightningTimeLeft--; updateLightningBar();
-                if(lightningTimeLeft <= 0) { clearInterval(lightningInterval); playSound('error'); userAnswers[currentQuestionIndex] = false; userSelectedText[currentQuestionIndex] = "⏳ ¡Se acabó el tiempo!"; setTimeout(() => nextQuestion(), 500); }
-            }, 1000);
-        }
-    }
-
-    function selectOption(opt, idx, el) {
-        if(isLightningMode) clearInterval(lightningInterval); playSound('click');
-        Array.from(optionsContainer.children).forEach(c => c.classList.remove('selected')); el.classList.add('selected');
-        userAnswers[currentQuestionIndex] = opt.c; userSelectedText[currentQuestionIndex] = opt.t;
-        nextBtn.disabled = false;
-    }
-
-    function nextQuestion() { 
-        window.speechSynthesis.cancel(); 
-        
-        if(isBossMode) {
-            if(userAnswers[currentQuestionIndex]) {
-                bossHP--; const bossSpr = document.getElementById('boss-sprite'); bossSpr.classList.remove('boss-hit'); void bossSpr.offsetWidth; bossSpr.classList.add('boss-hit');
-                playSound('pop'); document.getElementById('boss-hp-fill').style.width = `${(bossHP/10)*100}%`;
-            } else {
-                playerHP--; document.getElementById('player-hp').textContent = '❤️'.repeat(playerHP) + '🖤'.repeat(3 - playerHP);
-                playSound('error'); document.body.style.transform = 'translate(10px, 10px)'; setTimeout(()=>document.body.style.transform='none', 100);
-            }
-            if(bossHP <= 0) { finishExam(false, true); return; }
-            if(playerHP <= 0) { finishExam(false, false); return; }
-            currentQuestionIndex++; loadQuestion();
-        } else {
-            if (currentQuestionIndex < currentExamQuestions.length - 1) { currentQuestionIndex++; loadQuestion(); } else { finishExam(false); }
-        }
-    }
-
-    function finishExam(isTimeout, isBossWin = false) {
-        window.speechSynthesis.cancel(); clearInterval(timerInterval); clearInterval(lightningInterval); timerDisplay.style.display = 'none';
-        screenExam.style.display = 'none'; screenResults.style.display = 'flex';
-
-        let score = 0; const corrList = document.getElementById('corrections-list'); corrList.innerHTML = '';
-        const questionsAnswered = isBossMode ? currentQuestionIndex + 1 : currentExamQuestions.length;
-        
-        for(let i=0; i<questionsAnswered; i++) {
-            const q = currentExamQuestions[i]; const corrTxt = q.options.find(o => o.c) ? q.options.find(o => o.c).t : '';
-            if (userAnswers[i] === true) { score++; corrList.innerHTML += `<div class="correction-item"><div class="corr-q">${i+1}. ${q.q}</div><div class="corr-correct">✅ Acertaste: ${corrTxt}</div><div class="corr-explanation">💡 ${q.exp}</div></div>`;
-            } else { const uAns = userSelectedText[i] || "⏳ No respondida a tiempo"; corrList.innerHTML += `<div class="correction-item"><div class="corr-q">${i+1}. ${q.q}</div><div class="corr-wrong">❌ Tu respuesta: ${uAns}</div><div class="corr-correct">✅ Correcta: ${corrTxt}</div><div class="corr-explanation">💡 ${q.exp}</div></div>`; }
-        }
-
-        if(!isBossMode) {
-            const multiplier = isLightningMode ? 15 : 10; const xpEarned = score * multiplier;
-            if(xpEarned > 0) { playerProfile.xp += xpEarned; saveProfile(); const xpDisp = document.getElementById('xp-gain-display'); xpDisp.innerHTML = `+${xpEarned} XP 🌟 ${isLightningMode?'(Bono Relámpago)':''}`; xpDisp.style.display = 'block'; }
-        }
-
-        if(!currentExamId.includes('random') && !currentExamId.includes('lightning') && !isBossMode) saveExamProgress(currentExamId, score);
-
-        const msg = document.getElementById('results-msg'), text = document.getElementById('score-text');
-        
-        if(isBossMode) {
-            if(isBossWin) {
-                msg.textContent = "¡Derrotaste al Monstruo! 🦖⚔️"; text.textContent = "¡Eres la mejor guerrera SIMCE!"; playSound('win'); fireConfetti(); unlockBadge('boss_slayer');
-                const xpEarned = 200; playerProfile.xp += xpEarned; saveProfile();
-                const xpDisp = document.getElementById('xp-gain-display'); xpDisp.innerHTML = `+${xpEarned} XP 🌟 (Victoria Épica)`; xpDisp.style.display = 'block';
-                document.getElementById('score-display').textContent = "🏆"; document.getElementById('score-display').style.borderColor = "var(--success)"; document.getElementById('score-display').style.color = "var(--success)";
-                document.getElementById('btn-recreo').style.display = 'inline-flex';
-            } else {
-                 msg.textContent = "El monstruo te venció... ☠️"; text.textContent = "¡Pero eres fuerte! Revisa qué falló e inténtalo de nuevo.";
-                 document.getElementById('score-display').textContent = "💔"; document.getElementById('score-display').style.borderColor = "var(--error)"; document.getElementById('score-display').style.color = "var(--error)"; playSound('error');
-            }
-        } else {
-            document.getElementById('score-display').textContent = `${score}/${currentExamQuestions.length}`;
-            if(score >= 3 && !isTimeout) document.getElementById('btn-recreo').style.display = 'inline-flex';
-            if (isTimeout && !isLightningMode) { msg.textContent = "¡Se acabó el tiempo! ⏰"; text.textContent = "Revisa las explicaciones."; document.getElementById('score-display').style.borderColor = "#fdcb6e"; document.getElementById('score-display').style.color = "#fdcb6e"; playSound('correct');
-            } else if (score === currentExamQuestions.length) { document.getElementById('score-display').style.borderColor = "var(--success)"; document.getElementById('score-display').style.color = "var(--success)"; msg.textContent = "¡Perfecto Rocío! 🎉"; text.textContent = `¡Un ${score} de ${currentExamQuestions.length}! Eres una experta.`; playSound('win'); fireConfetti();
-            } else if (score >= 3) { document.getElementById('score-display').style.borderColor = "#fdcb6e"; document.getElementById('score-display').style.color = "#fdcb6e"; msg.textContent = "¡Buen trabajo! 👍"; text.textContent = "Lo hiciste muy bien."; playSound('correct');
-            } else { document.getElementById('score-display').style.borderColor = "var(--error)"; document.getElementById('score-display').style.color = "var(--error)"; msg.textContent = "¡Sigue practicando! 💪"; text.textContent = "¡No te rindas! Lee el Modo Tutor."; }
-        }
-
-        document.getElementById('corrections-container').style.display = 'block';
-
-        if(!isBossMode) {
-            if(score > 0) unlockBadge('first_exam');
-            if(score === currentExamQuestions.length) unlockBadge('perfect');
-            if(isLightningMode && score === currentExamQuestions.length) unlockBadge('speedy');
-            const prog = getProgress(); if(Object.keys(prog).filter(k => k.startsWith('lang')).length >= 3) unlockBadge('reader');
-        }
-    }
-
-    function goHome() { 
-        isLightningMode=false; isBossMode=false; 
-        if(currentSubject === 'math' || currentSubject === 'lang') currentHomeMenu = currentSubject; else currentHomeMenu = 'main';
-        window.speechSynthesis.cancel(); clearInterval(timerInterval); clearInterval(lightningInterval); timerDisplay.style.display = 'none'; screenExam.style.display = 'none'; screenResults.style.display = 'none'; screenHome.style.display = 'flex'; renderHome(); 
-    }
-    
-    function readAloud() { if ('speechSynthesis' in window) { window.speechSynthesis.cancel(); let textToRead = currentExamQuestions[currentQuestionIndex].q + ". "; currentExamQuestions[currentQuestionIndex].options.forEach((opt, i) => textToRead += "Opción " + ['A','B','C','D'][i] + ", " + opt.t + ". "); const ut = new SpeechSynthesisUtterance(textToRead); ut.lang = 'es-CL'; ut.rate = 0.9; window.speechSynthesis.speak(ut); } else alert("Tu dispositivo no soporta voz."); }
-
-    // --- WHITEBOARD & MINIGAME ---
-    const wbCanvas = document.getElementById('wb-canvas'), wbCtx = wbCanvas.getContext('2d'); let wbDrawing = false;
-    function initWhiteboard() { wbCanvas.width = window.innerWidth; wbCanvas.height = window.innerHeight; wbCtx.lineWidth = 4; wbCtx.lineCap = 'round'; wbCtx.strokeStyle = document.body.classList.contains('dark-mode') ? '#ffffff' : '#2d3436'; }
-    function getWbPos(e) { if(e.touches) return {x: e.touches[0].clientX, y: e.touches[0].clientY}; return {x: e.clientX, y: e.clientY}; }
-    function wbStart(e) { wbDrawing = true; const p = getWbPos(e); wbCtx.beginPath(); wbCtx.moveTo(p.x, p.y); e.preventDefault(); }
-    function wbDraw(e) { if(!wbDrawing) return; const p = getWbPos(e); wbCtx.lineTo(p.x, p.y); wbCtx.stroke(); e.preventDefault(); }
-    function wbEnd(e) { wbDrawing = false; e.preventDefault(); }
-    wbCanvas.addEventListener('mousedown', wbStart); wbCanvas.addEventListener('mousemove', wbDraw); wbCanvas.addEventListener('mouseup', wbEnd);
-    wbCanvas.addEventListener('touchstart', wbStart, {passive:false}); wbCanvas.addEventListener('touchmove', wbDraw, {passive:false}); wbCanvas.addEventListener('touchend', wbEnd);
-    
-    function clearWhiteboard() { wbCtx.clearRect(0,0,wbCanvas.width,wbCanvas.height); } 
-    function closeWhiteboard() { document.getElementById('whiteboard-modal').style.display='none'; } 
-    function openWhiteboard() { initWhiteboard(); const qData = currentExamQuestions[currentQuestionIndex]; document.getElementById('wb-question-text').textContent = qData ? qData.q : ''; document.getElementById('whiteboard-modal').style.display='block'; unlockBadge('artist'); }
-
-    let mgActive = false, mgScore = 0, mgTime = 30, mgBalloons = [], mgTimerInterval;
-    function startMinigame() { screenResults.style.display = 'none'; document.getElementById('minigame-screen').style.display = 'flex'; const c = document.getElementById('mg-canvas'); c.width = window.innerWidth; c.height = window.innerHeight; mgActive = true; mgScore = 0; mgTime = 30; mgBalloons = []; c.addEventListener('touchstart', handleMgTap, {passive:false}); c.addEventListener('mousedown', handleMgTap); mgLoop(); mgTimerInterval = setInterval(() => { mgTime--; if(mgTime <= 0 || !mgActive) endMinigame(); }, 1000); }
-    function handleMgTap(e) { e.preventDefault(); const p = getWbPos(e); for(let i=mgBalloons.length-1; i>=0; i--) { const b = mgBalloons[i]; if(Math.hypot(b.x - p.x, b.y - p.y) < b.r + 10) { mgBalloons.splice(i, 1); mgScore += 10; playSound('pop'); break; } } }
-    function mgLoop() { if(!mgActive) return; const c = document.getElementById('mg-canvas'), ctx = c.getContext('2d'); ctx.clearRect(0,0,c.width,c.height); if(Math.random() < 0.04 + (mgScore/5000)) { mgBalloons.push({ x: Math.random()*(c.width-60)+30, y: c.height+50, r: Math.random()*20+35, vy: -Math.random()*4-2, c: `hsl(${Math.random()*360},80%,60%)` }); } mgBalloons.forEach(b => { b.y += b.vy; ctx.beginPath(); ctx.arc(b.x, b.y, b.r, 0, Math.PI*2); ctx.fillStyle = b.c; ctx.fill(); ctx.closePath(); }); mgBalloons = mgBalloons.filter(b => b.y+b.r > 0); document.getElementById('mg-score').textContent = `Puntos: ${mgScore}`; document.getElementById('mg-time').textContent = `⏱️ ${mgTime}s`; requestAnimationFrame(mgLoop); }
-    function endMinigame() { mgActive = false; clearInterval(mgTimerInterval); const c = document.getElementById('mg-canvas'); c.removeEventListener('touchstart', handleMgTap); c.removeEventListener('mousedown', handleMgTap); document.getElementById('minigame-screen').style.display = 'none'; alert(`¡Recreo Terminado! Lograste ${mgScore} puntos. ¡Volvamos a estudiar!`); goHome(); }
-
-    function fireConfetti() { const c = document.getElementById('confetti'), ctx = c.getContext('2d'); c.width = window.innerWidth; c.height = window.innerHeight; const pcs = [], colors = ['#f44336','#e91e63','#9c27b0','#3f51b5','#03a9f4','#00bcd4','#4CAF50','#FFEB3B','#FF9800']; for(let i=0; i<150; i++) pcs.push({x:c.width/2,y:c.height/2+100,vx:(Math.random()-0.5)*25,vy:(Math.random()-1)*25-5,s:Math.random()*10+5,c:colors[Math.floor(Math.random()*colors.length)],r:Math.random()*360,rs:(Math.random()-0.5)*10}); let f = 0; function r() { ctx.clearRect(0,0,c.width,c.height); let act = false; pcs.forEach(p => { p.x+=p.vx; p.y+=p.vy; p.vy+=0.5; p.r+=p.rs; if(p.y<c.height) act=true; ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.r*Math.PI/180); ctx.fillStyle=p.c; ctx.fillRect(-p.s/2,-p.s/2,p.s,p.s); ctx.restore(); }); if(act && f<250) { f++; requestAnimationFrame(r); } else ctx.clearRect(0,0,c.width,c.height); } r(); }
-
-    window.onload = renderHome;
+renderAll();
 </script>
-
 </body>
 </html>
