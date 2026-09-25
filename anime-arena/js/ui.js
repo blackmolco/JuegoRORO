@@ -19,7 +19,7 @@ function unitCard(u, opts = {}) {
   const inTeam = G.team.includes(u.uid);
   const cls = ['ucard', 'el-' + ch.el, opts.selected ? 'selected' : '', opts.disabled ? 'disabled' : ''].join(' ');
   return `<div class="${cls}" data-uid="${u.uid}">
-    <div class="u-pic">${portraitSVG(u.id)}
+    <div class="u-pic">${portraitSVG(u.id, u.awakened)}
       <span class="u-elem">${ELEMENTS[ch.el].icon}</span>
       ${inTeam && !opts.noTeamMark ? '<span class="u-team">EQ</span>' : ''}
       ${u.locked ? '<span class="u-lock">🔒</span>' : ''}
@@ -34,7 +34,7 @@ function unitCard(u, opts = {}) {
 function specCard(spec) {
   const ch = CHARS[spec.id];
   return `<div class="ucard mini el-${ch.el}">
-    <div class="u-pic">${portraitSVG(spec.id)}<span class="u-elem">${ELEMENTS[ch.el].icon}</span></div>
+    <div class="u-pic">${portraitSVG(spec.id, spec.awakened)}<span class="u-elem">${ELEMENTS[ch.el].icon}</span></div>
     ${starsHtml(ch.stars, spec.awakened)}<div class="u-lv">Nv. ${spec.level}</div></div>`;
 }
 
@@ -120,7 +120,7 @@ function renderHome() {
     <div class="home-hero">
       <h1 class="logo small">Anime <span>Sky Arena</span></h1>
       <div class="island">
-        ${team.map((u, i) => `<div class="island-unit" style="--d:${i * 0.4}s">${portraitSVG(u.id)}</div>`).join('')}
+        ${team.map((u, i) => `<div class="island-unit" style="--d:${i * 0.4}s">${portraitSVG(u.id, u.awakened)}</div>`).join('')}
       </div>
       <div class="power">Poder del equipo: <b>${fmt(teamPower(G.team))}</b></div>
     </div>
@@ -328,7 +328,7 @@ function campaignResult(r, s, st, res) {
       ${rw.crystals ? `<div>💎 +${rw.crystals} cristales</div>` : ''}
       ${rw.drops.map(d => `<div class="drop">${d}</div>`).join('')}
     </div>
-    <div class="xp-list">${xpLines.map(x => `<div class="xp-row">${portraitSVG(x.u.id)}<span>${CHARS[x.u.id].name}</span>
+    <div class="xp-list">${xpLines.map(x => `<div class="xp-row">${portraitSVG(x.u.id, x.u.awakened)}<span>${CHARS[x.u.id].name}</span>
       <b>${x.ups ? `Nv. ${x.before} → ${x.u.level} ⬆️` : x.u.level >= MAX_LEVEL ? 'MÁX' : `+${st.reward.xp} XP`}</b></div>`).join('')}</div>
     <div class="modal-actions">
       <button class="btn ghost" id="mBack">Mapa</button>
@@ -505,7 +505,10 @@ function dexDetail(id) {
       <div class="big-pic ${owned ? '' : 'unknown'}">${portraitSVG(id)}</div>
       <div><h2>${owned ? ch.name : '???'}</h2>${starsHtml(ch.stars)}<div class="tag">${ELEMENTS[ch.el].icon} ${ELEMENTS[ch.el].name} · ${ROLES[ch.role].name}</div><small>${ch.series}</small></div>
     </div>
-    ${owned ? `<div class="leader-info">👑 ${leaderText(ch.leader)}</div>${skillListHtml(ch)}` : '<p class="hint">Invoca a este héroe para ver sus habilidades.</p>'}
+    ${owned ? `<div class="forms el-${ch.el}">
+      <figure><div class="big-pic">${portraitSVG(id)}</div><figcaption>Normal</figcaption></figure>
+      <figure><div class="big-pic">${portraitSVG(id, true)}</div><figcaption>✦ Despertado</figcaption></figure></div>
+      <div class="leader-info">👑 ${leaderText(ch.leader)}</div>${skillListHtml(ch)}` : '<p class="hint">Invoca a este héroe para ver sus habilidades.</p>'}
     <div class="modal-actions"><button class="btn" id="mClose">Cerrar</button></div>`);
   box.querySelector('#mClose').onclick = closeModal;
 }
@@ -520,7 +523,7 @@ function unitDetail(uid) {
   const canSkill = u.awakened && u.sl < 4 && dups.length > 0;
   const box = openModal(`
     <div class="detail-head el-${ch.el}">
-      <div class="big-pic">${portraitSVG(u.id)}</div>
+      <div class="big-pic">${portraitSVG(u.id, u.awakened)}</div>
       <div>
         <h2>${unitName(u)}</h2>${starsHtml(ch.stars, u.awakened)}
         <div class="tag">${ELEMENTS[ch.el].icon} ${ELEMENTS[ch.el].name} · ${ROLES[ch.role].name}</div>

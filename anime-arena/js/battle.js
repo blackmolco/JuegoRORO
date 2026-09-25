@@ -13,7 +13,7 @@ function makeFighter(spec, side, idx) {
   const f = {
     fid: side + idx + '_' + Math.random().toString(36).slice(2, 7),
     id: spec.id, side, name: (spec.awakened ? ch.name + ' ✦' : ch.name), el: ch.el, level: spec.level,
-    boss: !!spec.boss, sl: spec.sl || 0,
+    boss: !!spec.boss, sl: spec.sl || 0, awakened: !!spec.awakened,
     maxHp: st.hp, atk: st.atk, def: st.def, spd: st.spd, cr: st.cr, cdmg: st.cdmg, res: st.res, acc: st.acc,
     skills: ch.skills.map(s => ({ ...s, cur: 0 })),
     effects: [], shield: 0, atb: 0, extraTurn: false,
@@ -296,21 +296,31 @@ class Battle {
     targets = targets.filter(Boolean);
     if (s.cd) s.cur = s.cd;
 
+    const kind = FX_KIND[u.id] || 'ki';
+    const idx = u.skills.indexOf(s);
+    const ultimate = s.cd >= 5 || (u.skills.length >= 3 && idx === u.skills.length - 1);
+    if (ultimate) await this.cutIn(u, s);
     this.showSkill(u, s);
-    this.anim(u, 'act');
-    await this.sleep(380);
+    const melee = kind === 'slash' || kind === 'punch';
+    this.lunge(u, s.target === 'enemy' ? targets[0] : null, melee && s.mult > 0);
+    await this.sleep(melee ? 260 : 200);
 
     const glanced = new Set();
     if (s.mult > 0) {
       for (let h = 0; h < s.hits; h++) {
-        for (const t of targets) {
-          if (t.hp <= 0) continue;
-          const r = this.damage(u, t, s);
+        const alive = targets.filter(t => t.hp > 0);
+        if (!alive.length) break;
+        await this.attackFx(u, alive, s, kind);
+        for (const t of alive) {
+          const r = this.damage(u, t, s, kind);
           if (r.glance) glanced.add(t);
         }
         this.updateAll();
-        await this.sleep(s.hits > 1 ? 180 : 320);
+        await this.sleep(s.hits > 1 ? 130 : 280);
       }
+    } else {
+      this.supportFx(u, targets, s);
+      await this.sleep(420);
     }
     for (const fx of s.fx) this.applyFx(u, fx, targets, glanced);
     this.updateAll();
@@ -319,7 +329,7 @@ class Battle {
     [...this.allies, ...this.enemies].forEach(f => { if (f.hp <= 0 && !f.deadHandled) this.onDeath(f); });
   }
 
-  damage(u, t, s) {
+  damage(u, t, s, kind = 'ki') {
     let atk = u.atk * (1 + (has(u, 'atkUp') ? 0.5 : 0) - (has(u, 'atkDown') ? 0.5 : 0));
     let base = atk * s.mult + (s.hpScale ? u.maxHp * s.hpScale : 0);
     let def = t.def * (1 + (has(t, 'defUp') ? 0.7 : 0) - (has(t, 'defDown') ? 0.7 : 0));
@@ -348,6 +358,8 @@ class Battle {
     t.hp = Math.max(0, t.hp - real);
     this.float(t, dmg, crit ? 'crit' : glance ? 'glance' : rel > 0 ? 'adv' : 'dmg');
     this.anim(t, 'hit');
+    this.burst(t, kind, crit);
+    if (crit) this.shake();
     if (s.lifesteal) {
       const h = Math.round(real * s.lifesteal);
       u.hp = Math.min(u.maxHp, u.hp + h);
@@ -449,6 +461,7 @@ class Battle {
     f.effects = [];
     f.shield = 0;
     if (f.side === 'A') this.deaths++;
+    this.burst(f, 'ko', true);
     this.log(`${f.name} ha caído.`);
     this.updateFighter(f);
   }
@@ -487,7 +500,9 @@ class Battle {
         <div class="row allies" id="allyRow"></div>
       </div>
       <div class="skillbar" id="skillBar"></div>
-      <div class="battle-log" id="battleLog"></div>`;
+      <div class="battle-log" id="battleLog"></div>
+      <div class="fx-layer" id="fxLayer"></div>`;
+    this.layer = r.querySelector('#fxLayer');
     r.querySelector('#bQuit').onclick = () => { if (confirm('¿Abandonar la batalla? No obtendrás recompensas.')) this.quit(); };
     r.querySelector('#bSpeed').onclick = () => {
       G.settings.speed = G.settings.speed >= 3 ? 1 : G.settings.speed + 1; save(); this.updateControls();
@@ -500,6 +515,7 @@ class Battle {
 
   updateControls() {
     this.root.querySelector('#bSpeed').textContent = `⏩ x${G.settings.speed}`;
+    this.root.style.setProperty('--spd', G.settings.speed);
     const a = this.root.querySelector('#bAuto');
     a.textContent = G.settings.auto ? '🤖 AUTO: ON' : '🤖 AUTO: OFF';
     a.classList.toggle('on', !!G.settings.auto);
@@ -510,10 +526,11 @@ class Battle {
     row.innerHTML = '';
     list.forEach(f => {
       const d = document.createElement('div');
-      d.className = `fighter el-${f.el}${f.boss ? ' boss' : ''}`;
+      d.className = `fighter el-${f.el}${f.boss ? ' boss' : ''}${f.awakened ? ' awakened' : ''}`;
+      d.style.setProperty('--idle', (Math.random() * 2).toFixed(2) + 's');
       d.innerHTML = `
         <div class="f-atb"><i></i></div>
-        <div class="f-pic">${portraitSVG(f.id)}<span class="f-elem">${ELEMENTS[f.el].icon}</span><span class="f-lv">${f.level}</span></div>
+        <div class="f-pic">${portraitSVG(f.id, f.awakened)}<span class="f-elem">${ELEMENTS[f.el].icon}</span><span class="f-lv">${f.level}</span></div>
         <div class="f-name">${f.name}</div>
         <div class="f-hp"><i class="hp"></i><i class="sh"></i></div>
         <div class="f-fx"></div>
@@ -563,7 +580,7 @@ class Battle {
     const s = u.skills[this.selected];
     const tgtTxt = { enemy: 'Toca un enemigo', enemies: 'Toca cualquier enemigo (ataque en área)', ally: 'Toca un aliado', allies: 'Toca cualquier aliado', self: 'Tócate a ti mismo' }[s.target];
     bar.innerHTML = `
-      <div class="skill-owner">${portraitSVG(u.id)}<b>${u.name}</b></div>
+      <div class="skill-owner">${portraitSVG(u.id, u.awakened)}<b>${u.name}</b></div>
       <div class="skill-btns">${u.skills.map((sk, i) => {
         const locked = sk.cur > 0 || (silenced && i > 0);
         return `<button class="skill-btn ${i === this.selected ? 'sel' : ''} ${locked ? 'locked' : ''}" data-i="${i}">
@@ -598,6 +615,111 @@ class Battle {
     const b = this.root.querySelector('#skillBanner');
     b.innerHTML = `<b class="big">${text}</b>${sub ? `<br><span class="sub">${sub}</span>` : ''}`;
     b.classList.remove('show'); void b.offsetWidth; b.classList.add('show');
+  }
+
+  /* ---------------- Efectos visuales ---------------- */
+  center(f) {
+    const el = f.dom && f.dom.querySelector('.f-pic');
+    if (!el) return { x: 0, y: 0 };
+    const r = el.getBoundingClientRect(), R = this.root.getBoundingClientRect();
+    return { x: r.left - R.left + r.width / 2, y: r.top - R.top + r.height / 2, w: r.width };
+  }
+
+  fx(cls, x, y, vars = {}, life = 1200) {
+    const d = document.createElement('div');
+    d.className = 'vfx ' + cls;
+    d.style.left = x + 'px';
+    d.style.top = y + 'px';
+    Object.entries(vars).forEach(([k, v]) => d.style.setProperty(k, v));
+    this.layer.appendChild(d);
+    setTimeout(() => d.remove(), life / Math.min(this.speed, 2));
+    return d;
+  }
+
+  lunge(u, target, melee) {
+    if (!u.dom) return;
+    let dx = 0, dy = u.side === 'A' ? -18 : 18;
+    if (target && target !== u) {
+      const a = this.center(u), b = this.center(target);
+      const k = melee ? 0.55 : 0.12;
+      dx = (b.x - a.x) * k; dy = (b.y - a.y) * k;
+    }
+    u.dom.style.setProperty('--lx', dx + 'px');
+    u.dom.style.setProperty('--ly', dy + 'px');
+    this.anim(u, 'lunge');
+  }
+
+  async attackFx(u, targets, s, kind) {
+    const c = FX_COLOR[kind] || '#fff';
+    const a = this.center(u);
+    const fast = s.hits > 1;
+    if (s.target === 'enemies') {
+      const row = this.root.querySelector(u.side === 'A' ? '#enemyRow' : '#allyRow').getBoundingClientRect();
+      const R = this.root.getBoundingClientRect();
+      this.fx('fx-wave' + (u.side === 'A' ? '' : ' down'), row.left - R.left + row.width / 2, row.top - R.top + row.height / 2,
+        { '--c': c, '--w': row.width + 40 + 'px', '--h': row.height + 20 + 'px' }, 900);
+      targets.forEach(t => { const b = this.center(t); this.fx('fx-proj', a.x, a.y, { '--c': c, '--tx': b.x - a.x + 'px', '--ty': b.y - a.y + 'px' }, 500); });
+      await this.sleep(fast ? 160 : 300);
+      return;
+    }
+    const t = targets[0];
+    const b = this.center(t);
+    if (kind === 'slash' || kind === 'punch') {
+      this.fx(kind === 'slash' ? 'fx-slash' : 'fx-impact', b.x, b.y, { '--c': c, '--r': (Math.random() * 90 - 45) + 'deg' }, 600);
+      await this.sleep(fast ? 70 : 120);
+    } else if (s.mult >= 5 && !fast) {
+      const dx = b.x - a.x, dy = b.y - a.y;
+      this.fx('fx-beam', a.x, a.y, { '--c': c, '--len': Math.hypot(dx, dy) + 'px', '--ang': Math.atan2(dy, dx) + 'rad' }, 800);
+      await this.sleep(300);
+    } else {
+      this.fx('fx-proj' + (kind === 'arrow' ? ' arrow' : ''), a.x, a.y,
+        { '--c': c, '--tx': b.x - a.x + 'px', '--ty': b.y - a.y + 'px', '--ang': Math.atan2(b.y - a.y, b.x - a.x) + 'rad' }, 500);
+      await this.sleep(fast ? 110 : 230);
+    }
+  }
+
+  burst(t, kind, big) {
+    const b = this.center(t);
+    const c = kind === 'ko' ? '#ffffff' : (FX_COLOR[kind] || '#fff');
+    this.fx('fx-burst' + (big ? ' big' : ''), b.x, b.y, { '--c': c }, 700);
+    if (big) for (let i = 0; i < 6; i++) {
+      const ang = Math.random() * Math.PI * 2, d = 30 + Math.random() * 30;
+      this.fx('fx-spark', b.x, b.y, { '--c': c, '--tx': Math.cos(ang) * d + 'px', '--ty': Math.sin(ang) * d + 'px' }, 700);
+    }
+  }
+
+  supportFx(u, targets, s) {
+    const harmful = s.target === 'enemies' || s.target === 'enemy';
+    const heals = s.fx.some(f => f.t === 'heal' || f.t === 'shield');
+    const list = harmful ? this.foesOf(u) : targets;
+    if (harmful) {
+      const row = this.root.querySelector(u.side === 'A' ? '#enemyRow' : '#allyRow').getBoundingClientRect();
+      const R = this.root.getBoundingClientRect();
+      this.fx('fx-flash', row.left - R.left + row.width / 2, row.top - R.top + row.height / 2,
+        { '--c': ELEMENTS[u.el].color, '--w': row.width + 40 + 'px', '--h': row.height + 20 + 'px' }, 900);
+    }
+    list.forEach(t => {
+      const b = this.center(t);
+      const c = harmful ? '#b073ff' : heals ? '#4ade80' : '#ffd23a';
+      for (let i = 0; i < 5; i++) {
+        this.fx('fx-rise', b.x + (Math.random() * 50 - 25), b.y + 10 + Math.random() * 20, { '--c': c, '--d': (i * 90) + 'ms' }, 1200);
+      }
+      this.fx('fx-ring', b.x, b.y, { '--c': c }, 800);
+    });
+  }
+
+  shake() {
+    this.root.classList.remove('shake'); void this.root.offsetWidth; this.root.classList.add('shake');
+  }
+
+  async cutIn(u, s) {
+    const d = document.createElement('div');
+    d.className = `cutin el-${u.el} ${u.side === 'A' ? 'from-left' : 'from-right'}`;
+    d.innerHTML = `<div class="ci-lines"></div><div class="ci-pic">${portraitSVG(u.id, u.awakened)}</div>
+      <div class="ci-text"><small>${u.name}</small><b>${s.name}</b></div>`;
+    this.root.appendChild(d);
+    await this.sleep(1000);
+    d.remove();
   }
 
   anim(f, cls) {
