@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="theme-color" content="#0d1726">
+<title>Anime Sky Arena</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header id="topbar">
+    <div class="brand">⚔️ <span>Anime Sky Arena</span></div>
+    <div class="resources">
+      <span class="res" title="Maná">🪙 <b id="resMana">0</b></span>
+      <span class="res" title="Cristales">💎 <b id="resCrystals">0</b></span>
+      <span class="res" title="Pergaminos">📜 <b id="resScrolls">0</b></span>
+    </div>
+  </header>
+
+  <main>
+    <section id="starter" class="screen"></section>
+    <section id="home" class="screen"></section>
+    <section id="campaign" class="screen"></section>
+    <section id="arena" class="screen"></section>
+    <section id="summon" class="screen"></section>
+    <section id="collection" class="screen"></section>
+    <section id="battle" class="screen"></section>
+  </main>
+
+  <nav id="bottomnav">
+    <button data-go="home"><span>🏠</span>Inicio</button>
+    <button data-go="campaign"><span>🗺️</span>Campaña</button>
+    <button data-go="arena"><span>⚔️</span>Arena</button>
+    <button data-go="summon"><span>🔮</span>Invocar</button>
+    <button data-go="collection"><span>📖</span>Héroes</button>
+  </nav>
+
+  <div id="modal" class="modal hidden"><div class="modal-box"></div></div>
+  <div id="toast"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/portrait.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/battle.js"></script>
+  <script src="js/ui.js"></script>
+</body>
+</html>
