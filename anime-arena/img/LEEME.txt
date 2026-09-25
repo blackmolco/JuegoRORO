@@ -1,0 +1,2 @@
+Pon aquí tus imágenes de personajes y regístralas en js/custom-images.js
+Ejemplo: goku.png  ->  goku: 'goku.png',
